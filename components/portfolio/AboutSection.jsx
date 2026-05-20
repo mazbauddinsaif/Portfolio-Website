@@ -3,15 +3,45 @@
 export default function AboutSection({ data, active }) {
   if (!data) return null;
 
+  // Modern, secure custom text parser to render safe formatting without dangerouslySetInnerHTML
+  const parseFormattedText = (text) => {
+    if (!text) return '';
+    const regex = /(<strong>[\s\S]*?<\/strong>|<em>[\s\S]*?<\/em>|<u>[\s\S]*?<\/u>|<p>[\s\S]*?<\/p>|<br\s*\/?>)/g;
+    const parts = text.split(regex);
+    
+    return parts.map((part, index) => {
+      if (part.startsWith('<strong>') && part.endsWith('</strong>')) {
+        const content = part.substring(8, part.length - 9);
+        return <strong key={index}>{parseFormattedText(content)}</strong>;
+      }
+      if (part.startsWith('<em>') && part.endsWith('</em>')) {
+        const content = part.substring(4, part.length - 5);
+        return <em key={index}>{parseFormattedText(content)}</em>;
+      }
+      if (part.startsWith('<u>') && part.endsWith('</u>')) {
+        const content = part.substring(3, part.length - 4);
+        return <u key={index}>{parseFormattedText(content)}</u>;
+      }
+      if (part.startsWith('<p>') && part.endsWith('</p>')) {
+        const content = part.substring(3, part.length - 4);
+        return <p key={index} className="mb-4">{parseFormattedText(content)}</p>;
+      }
+      if (part.match(/^<br\s*\/?>$/)) {
+        return <br key={index} />;
+      }
+      return part;
+    });
+  };
+
   return (
     <article className={`about${active ? ' active' : ''}`} data-page="about">
       <header>
         <h2 className="h2 article-title">About me</h2>
       </header>
 
-      <section className="about-text">
+      <section className="about-text" style={{ whiteSpace: 'pre-wrap' }}>
         {(data.paragraphs || []).map((p, i) => (
-          <p key={i}>{p}</p>
+          <div key={i}>{parseFormattedText(p)}</div>
         ))}
       </section>
 
