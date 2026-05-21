@@ -10,10 +10,7 @@ export default function Navbar({ activePage, setActivePage }) {
           <li key={page} className="navbar-item">
             <button
               className={`navbar-link${activePage === page.toLowerCase() ? ' active' : ''}`}
-              onClick={() => {
-                setActivePage(page.toLowerCase());
-                window.scrollTo(0, 0);
-              }}
+              onClick={() => setActivePage(page.toLowerCase())}
             >
               {page}
             </button>

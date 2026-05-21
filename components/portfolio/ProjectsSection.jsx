@@ -1,37 +1,85 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 function formatRepoName(name) {
   return name.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
 
-function deriveCategory(repo) {
-  const topics = (repo.topics || []).map(t => t.toLowerCase());
-  const lang = (repo.language || '').toLowerCase();
-  const webTopics = ['web','website','html','css','javascript','typescript','frontend','react','vue','angular','nextjs','nodejs','express','django','flask','api','full-stack','fullstack'];
-  const appTopics = ['cli','tool','automation','script','desktop','gui','electron','android','ios','mobile','game'];
-  const webLangs = ['javascript','typescript','html','css','php'];
-  const appLangs = ['c','c++','c#','java','rust','go','swift','kotlin','python'];
-  if (topics.some(t => webTopics.includes(t))) return 'web development';
-  if (topics.some(t => appTopics.includes(t))) return 'applications';
-  if (webLangs.includes(lang)) return 'web development';
-  if (appLangs.includes(lang)) return 'applications';
+function deriveCategory(lang) {
+  const webLangs = ['javascript', 'typescript', 'html', 'css', 'php'];
+  const appLangs = ['c', 'c++', 'c#', 'java', 'rust', 'go', 'swift', 'kotlin', 'python'];
+  const l = (lang || '').toLowerCase();
+  if (webLangs.includes(l)) return 'web development';
+  if (appLangs.includes(l)) return 'applications';
   return 'web development';
 }
 
-function deriveTechStack(repo) {
-  const stack = [];
-  if (repo.language) stack.push(repo.language);
-  const topicMap = {
-    'react':'React','nextjs':'Next.js','nodejs':'Node.js','express':'Express',
-    'django':'Django','flask':'Flask','mongodb':'MongoDB','tailwindcss':'Tailwind CSS',
-    'typescript':'TypeScript','docker':'Docker','postgresql':'PostgreSQL',
-  };
-  (repo.topics || []).forEach(t => {
-    const display = topicMap[t.toLowerCase()];
-    if (display && !stack.includes(display) && display !== repo.language) stack.push(display);
-  });
-  return stack.slice(0, 5);
+function ProjectModal({ project, onClose }) {
+  // Close on Escape key
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [onClose]);
+
+  if (!project) return null;
+
+  return (
+    <div className="project-modal-overlay" onClick={onClose}>
+      <div className="project-modal" onClick={e => e.stopPropagation()}>
+        <button className="project-modal-close" onClick={onClose} aria-label="Close">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+
+        <figure className="project-modal-img">
+          <img src={project.image} alt={project.title} />
+        </figure>
+
+        <div className="project-modal-body">
+          <div className="project-modal-meta">
+            {project.techStack?.length > 0 && (
+              <div className="tech-badge-list">
+                {project.techStack.map((t, i) => (
+                  <span key={i} className="tech-badge">{t}</span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <h3 className="project-modal-title">{project.title}</h3>
+
+          {project.description ? (
+            <p className="project-modal-desc">{project.description}</p>
+          ) : (
+            <p className="project-modal-desc project-modal-desc--empty">No description available.</p>
+          )}
+
+          <div className="project-modal-actions">
+            {project.githubUrl && (
+              <a
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="project-action-btn btn-code"
+              >
+                <ion-icon name="logo-github"></ion-icon> View Code
+              </a>
+            )}
+            {project.demoUrl && (
+              <a
+                href={project.demoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="project-action-btn btn-demo"
+              >
+                <ion-icon name="open-outline"></ion-icon> Live Demo
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function ProjectsSection({ data, active }) {
@@ -41,12 +89,14 @@ export default function ProjectsSection({ data, active }) {
   const [contribHtml, setContribHtml] = useState('');
   const [ghStats, setGhStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedProject, setSelectedProject] = useState(null);
+
+  const closeModal = useCallback(() => setSelectedProject(null), []);
 
   useEffect(() => {
     if (!data?.github?.username) { setLoading(false); return; }
     const cfg = data.github;
 
-    // Fetch GitHub repos & stats from backend API
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://personal-backend-2e63.onrender.com';
     fetch(`${apiUrl}/api/portfolio/github`)
       .then(r => r.json())
@@ -54,21 +104,25 @@ export default function ProjectsSection({ data, active }) {
         if (resData.enabled) {
           setGhStats(resData.profile);
 
-          const overrides = cfg.overrides || {};
-          const mappedProjects = resData.repositories.map(repo => {
-            const ov = overrides[repo.name] || {};
-            const mockRepo = {
-              topics: [],
-              language: repo.language
-            };
+          const repoOverrides = resData.repoOverrides || {};
+
+          // Only include repos that are active (default active if not set)
+          const activeRepos = resData.repositories.filter(repo => {
+            const ov = repoOverrides[repo.name];
+            return !ov || ov.active !== false;
+          });
+
+          const mappedProjects = activeRepos.map(repo => {
+            const ov = repoOverrides[repo.name] || {};
             return {
               title: ov.title || formatRepoName(repo.name),
-              category: ov.category || deriveCategory(mockRepo),
-              image: ov.image || `https://opengraph.githubassets.com/1/${cfg.username}/${repo.name}`,
-              description: ov.description || repo.description,
-              techStack: ov.techStack || (repo.language ? [repo.language] : []),
+              category: ov.category || deriveCategory(repo.language),
+              image: ov.thumbnail || `https://opengraph.githubassets.com/1/${cfg.username}/${repo.name}`,
+              // Custom description overrides GitHub's, otherwise fall back to GitHub's
+              description: ov.description || repo.description || '',
+              techStack: repo.language ? [repo.language] : [],
               githubUrl: repo.url,
-              demoUrl: ov.demoUrl !== undefined ? ov.demoUrl : repo.homepage,
+              demoUrl: ov.demoUrl !== undefined ? ov.demoUrl : (repo.homepage || ''),
               deepDiveUrl: ov.deepDiveUrl || '',
             };
           });
@@ -139,7 +193,7 @@ export default function ProjectsSection({ data, active }) {
         </section>
       )}
 
-      {/* GitHub Stats Dashboard */}
+      {/* GitHub Stats */}
       {ghStats && (
         <section className="github-stats-section">
           <div className="github-stats-grid">
@@ -150,16 +204,6 @@ export default function ProjectsSection({ data, active }) {
               <div className="github-stat-info">
                 <span className="github-stat-value">{ghStats.totalStars}</span>
                 <span className="github-stat-label">Total Stars</span>
-              </div>
-            </div>
-
-            <div className="github-stat-card">
-              <div className="github-stat-icon">
-                <ion-icon name="git-branch-outline"></ion-icon>
-              </div>
-              <div className="github-stat-info">
-                <span className="github-stat-value">{ghStats.totalForks}</span>
-                <span className="github-stat-label">Repo Forks</span>
               </div>
             </div>
 
@@ -183,17 +227,6 @@ export default function ProjectsSection({ data, active }) {
               </div>
             </div>
           </div>
-
-          {ghStats.topLanguages && ghStats.topLanguages.length > 0 && (
-            <div className="github-languages-card">
-              <span className="github-languages-title">Primary Tech Languages:</span>
-              <div className="github-languages-list">
-                {ghStats.topLanguages.map((lang, index) => (
-                  <span key={index} className="tech-badge">{lang}</span>
-                ))}
-              </div>
-            </div>
-          )}
         </section>
       )}
 
@@ -216,29 +249,36 @@ export default function ProjectsSection({ data, active }) {
         ) : (
           <ul className="project-list">
             {filteredProjects.map((p, i) => (
-              <li key={i} className="project-item active" data-category={p.category}>
+              <li
+                key={i}
+                className="project-item active"
+                data-category={p.category}
+                onClick={() => setSelectedProject(p)}
+                style={{ cursor: 'pointer' }}
+              >
                 <figure className="project-img">
-                  <img src={p.image} alt={p.title} loading="lazy" />
+                  <img
+                    src={p.image}
+                    alt={p.title}
+                    loading="lazy"
+                    onError={e => {
+                      e.target.onerror = null;
+                      e.target.src = `https://opengraph.githubassets.com/1/${data?.github?.username}/${p.title.replace(/\s+/g, '-')}`;
+                    }}
+                  />
+                  <div className="project-img-overlay">
+                    <ion-icon name="expand-outline"></ion-icon>
+                  </div>
                 </figure>
                 <div className="project-content">
                   <h3 className="project-title">{p.title}</h3>
-                  <p className="project-desc">{p.description}</p>
+                  {p.description && (
+                    <p className="project-desc">{p.description}</p>
+                  )}
                   <div className="tech-badge-list">
                     {(p.techStack || []).map((t, ti) => (
                       <span key={ti} className="tech-badge">{t}</span>
                     ))}
-                  </div>
-                  <div className="project-actions">
-                    {p.githubUrl && (
-                      <a href={p.githubUrl} target="_blank" rel="noopener noreferrer" className="project-action-btn btn-code">
-                        <ion-icon name="logo-github"></ion-icon> View Code
-                      </a>
-                    )}
-                    {p.demoUrl && (
-                      <a href={p.demoUrl} target="_blank" rel="noopener noreferrer" className="project-action-btn btn-demo">
-                        <ion-icon name="open-outline"></ion-icon> Live Demo
-                      </a>
-                    )}
                   </div>
                 </div>
               </li>
@@ -246,6 +286,11 @@ export default function ProjectsSection({ data, active }) {
           </ul>
         )}
       </section>
+
+      {/* Project Detail Modal */}
+      {selectedProject && (
+        <ProjectModal project={selectedProject} onClose={closeModal} />
+      )}
     </article>
   );
 }
