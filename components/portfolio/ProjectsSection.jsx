@@ -39,45 +39,49 @@ export default function ProjectsSection({ data, active }) {
   const [filterCategories, setFilterCategories] = useState(data?.filterCategories || ['All']);
   const [activeFilter, setActiveFilter] = useState('all');
   const [contribHtml, setContribHtml] = useState('');
+  const [ghStats, setGhStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!data?.github?.username) { setLoading(false); return; }
     const cfg = data.github;
 
-    // Fetch GitHub repos
-    fetch(`https://api.github.com/users/${cfg.username}/repos?sort=updated&per_page=100&type=public`)
+    // Fetch GitHub repos & stats from backend API
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://personal-backend-2e63.onrender.com';
+    fetch(`${apiUrl}/api/portfolio/github`)
       .then(r => r.json())
-      .then(repos => {
-        let filtered = repos;
-        if (cfg.excludeForks) filtered = filtered.filter(r => !r.fork);
-        const excluded = cfg.excludeRepos || [];
-        filtered = filtered.filter(r => !excluded.includes(r.name));
-        filtered.sort((a, b) => (b.stargazers_count - a.stargazers_count) || (new Date(b.updated_at) - new Date(a.updated_at)));
+      .then(resData => {
+        if (resData.enabled) {
+          setGhStats(resData.profile);
 
-        const overrides = cfg.overrides || {};
-        const ghProjects = filtered.map(repo => {
-          const ov = overrides[repo.name] || {};
-          return {
-            title: ov.title || formatRepoName(repo.name),
-            category: ov.category || deriveCategory(repo),
-            image: ov.image || `https://opengraph.githubassets.com/1/${cfg.username}/${repo.name}`,
-            description: ov.description || (repo.description || ''),
-            techStack: ov.techStack || deriveTechStack(repo),
-            githubUrl: repo.html_url,
-            demoUrl: ov.demoUrl !== undefined ? ov.demoUrl : (repo.homepage || ''),
-            deepDiveUrl: ov.deepDiveUrl || '',
-          };
-        });
+          const overrides = cfg.overrides || {};
+          const mappedProjects = resData.repositories.map(repo => {
+            const ov = overrides[repo.name] || {};
+            const mockRepo = {
+              topics: [],
+              language: repo.language
+            };
+            return {
+              title: ov.title || formatRepoName(repo.name),
+              category: ov.category || deriveCategory(mockRepo),
+              image: ov.image || `https://opengraph.githubassets.com/1/${cfg.username}/${repo.name}`,
+              description: ov.description || repo.description,
+              techStack: ov.techStack || (repo.language ? [repo.language] : []),
+              githubUrl: repo.url,
+              demoUrl: ov.demoUrl !== undefined ? ov.demoUrl : repo.homepage,
+              deepDiveUrl: ov.deepDiveUrl || '',
+            };
+          });
 
-        const allProjects = [...ghProjects, ...(data.projects || [])];
-        const cats = ['All'];
-        allProjects.forEach(p => {
-          const cat = p.category.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-          if (!cats.includes(cat)) cats.push(cat);
-        });
-        setProjects(allProjects);
-        setFilterCategories(cats);
+          const allProjects = [...mappedProjects, ...(data.projects || [])];
+          const cats = ['All'];
+          allProjects.forEach(p => {
+            const cat = p.category.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            if (!cats.includes(cat)) cats.push(cat);
+          });
+          setProjects(allProjects);
+          setFilterCategories(cats);
+        }
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -132,6 +136,64 @@ export default function ProjectsSection({ data, active }) {
       {contribHtml && (
         <section id="github-contributions-section">
           <div id="github-contributions" dangerouslySetInnerHTML={{ __html: contribHtml }} />
+        </section>
+      )}
+
+      {/* GitHub Stats Dashboard */}
+      {ghStats && (
+        <section className="github-stats-section">
+          <div className="github-stats-grid">
+            <div className="github-stat-card">
+              <div className="github-stat-icon">
+                <ion-icon name="star-outline"></ion-icon>
+              </div>
+              <div className="github-stat-info">
+                <span className="github-stat-value">{ghStats.totalStars}</span>
+                <span className="github-stat-label">Total Stars</span>
+              </div>
+            </div>
+
+            <div className="github-stat-card">
+              <div className="github-stat-icon">
+                <ion-icon name="git-branch-outline"></ion-icon>
+              </div>
+              <div className="github-stat-info">
+                <span className="github-stat-value">{ghStats.totalForks}</span>
+                <span className="github-stat-label">Repo Forks</span>
+              </div>
+            </div>
+
+            <div className="github-stat-card">
+              <div className="github-stat-icon">
+                <ion-icon name="folder-open-outline"></ion-icon>
+              </div>
+              <div className="github-stat-info">
+                <span className="github-stat-value">{ghStats.publicRepos}</span>
+                <span className="github-stat-label">Public Repos</span>
+              </div>
+            </div>
+
+            <div className="github-stat-card">
+              <div className="github-stat-icon">
+                <ion-icon name="people-outline"></ion-icon>
+              </div>
+              <div className="github-stat-info">
+                <span className="github-stat-value">{ghStats.followers}</span>
+                <span className="github-stat-label">Followers</span>
+              </div>
+            </div>
+          </div>
+
+          {ghStats.topLanguages && ghStats.topLanguages.length > 0 && (
+            <div className="github-languages-card">
+              <span className="github-languages-title">Primary Tech Languages:</span>
+              <div className="github-languages-list">
+                {ghStats.topLanguages.map((lang, index) => (
+                  <span key={index} className="tech-badge">{lang}</span>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
       )}
 
