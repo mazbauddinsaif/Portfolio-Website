@@ -62,11 +62,16 @@ export default function BlogSection({ data, active }) {
                   </figure>
                   <div className="blog-content">
                     <div className="blog-meta">
-                      <p className="blog-category">
-                        {post.tags?.length > 0 ? post.tags.join(', ') : 'Tech'}
-                      </p>
-                      <span className="dot"></span>
-                      <time dateTime={post.createdAt}>
+                      <div className="blog-tags">
+                        {post.tags?.length > 0 ? (
+                          post.tags.slice(0, 3).map((tag, idx) => (
+                            <span key={idx} className="blog-tag-pill">{tag.trim()}</span>
+                          ))
+                        ) : (
+                          <span className="blog-tag-pill">Tech</span>
+                        )}
+                      </div>
+                      <time className="blog-time" dateTime={post.createdAt}>
                         {new Date(post.createdAt).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',

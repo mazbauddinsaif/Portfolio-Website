@@ -80,12 +80,17 @@ export default function BlogPostClient({ sidebarData, postData }) {
         {/* Blog Post Main Page */}
         <article className="blog active" data-page="blog-post">
           <header>
-            <div className="blog-meta" style={{ marginBottom: '10px' }}>
-              <p className="blog-category">
-                {postData.tags?.length > 0 ? postData.tags.join(', ') : 'Tech'}
-              </p>
-              <span className="dot"></span>
-              <time dateTime={postData.createdAt}>
+            <div className="blog-meta">
+              <div className="blog-tags">
+                {postData.tags?.length > 0 ? (
+                  postData.tags.map((tag, idx) => (
+                    <span key={idx} className="blog-tag-pill">{tag.trim()}</span>
+                  ))
+                ) : (
+                  <span className="blog-tag-pill">Tech</span>
+                )}
+              </div>
+              <time className="blog-time" dateTime={postData.createdAt}>
                 {new Date(postData.createdAt).toLocaleDateString('en-US', {
                   month: 'long',
                   day: 'numeric',
