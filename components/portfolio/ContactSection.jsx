@@ -66,7 +66,7 @@ export default function ContactSection({ data, active }) {
           </div>
           <textarea className="form-input" placeholder="Your Message" required
             value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} />
-          <button className="form-btn" type="submit" disabled={!isValid || sending}>
+          <button className="form-btn" type="submit" disabled={!isValid || sending} data-track-click="submit_contact_form">
             <ion-icon name="paper-plane"></ion-icon>
             <span>{sending ? 'Sending...' : 'Send Message'}</span>
           </button>

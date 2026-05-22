@@ -36,6 +36,60 @@ export default function PortfolioClient({ data }) {
     window.scrollTo(0, 0);
   };
 
+  // Track page views
+  useEffect(() => {
+    const trackPageView = async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        await fetch(`${apiUrl}/api/analytics/track`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            type: 'pageview',
+            page: activePage,
+            referrer: document.referrer || ''
+          })
+        });
+      } catch (err) {
+        console.error('Failed to track page view:', err);
+      }
+    };
+
+    trackPageView();
+  }, [activePage]);
+
+  // Track clicks globally for elements with data-track-click attribute
+  useEffect(() => {
+    const handleGlobalClick = async (e) => {
+      const trackable = e.target.closest('[data-track-click]');
+      if (!trackable) return;
+
+      const eventData = trackable.getAttribute('data-track-click');
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        await fetch(`${apiUrl}/api/analytics/track`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            type: 'click',
+            page: activePage,
+            eventData: eventData,
+            referrer: document.referrer || ''
+          })
+        });
+      } catch (err) {
+        console.error('Failed to track click:', err);
+      }
+    };
+
+    document.addEventListener('click', handleGlobalClick);
+    return () => document.removeEventListener('click', handleGlobalClick);
+  }, [activePage]);
+
   useEffect(() => {
     document.title = `${data.sidebar?.name || 'Portfolio'} - Personal Portfolio`;
     if (data.sidebar?.avatar) {
@@ -55,7 +109,7 @@ export default function PortfolioClient({ data }) {
       <div className="main-content">
         <Navbar activePage={activePage} setActivePage={navigateTo} />
         <AboutSection data={data.about} active={activePage === 'about'} />
-        <ResumeSection data={data.resume} active={activePage === 'resume'} />
+        <ResumeSection data={data.resume} sidebarData={data.sidebar} active={activePage === 'resume'} />
         <AchievementsSection data={data.achievements} active={activePage === 'achievements'} />
         <ProjectsSection data={data.portfolio} active={activePage === 'projects'} />
         <BlogSection data={data.blog} active={activePage === 'blog'} />

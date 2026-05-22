@@ -1,12 +1,35 @@
 'use client';
 
-export default function ResumeSection({ data, active }) {
+export default function ResumeSection({ data, sidebarData, active }) {
   if (!data) return null;
 
   return (
     <article className={`resume${active ? ' active' : ''}`} data-page="resume">
-      <header>
-        <h2 className="h2 article-title">Resume</h2>
+      {/* Dynamic print-only header for professional A4 resume generation */}
+      {sidebarData && (
+        <div className="print-header">
+          <h1 className="print-name">{sidebarData.name}</h1>
+          <p className="print-title">{sidebarData.title}</p>
+          <div className="print-contact">
+            <span>{sidebarData.email}</span>
+            <span className="print-dot">·</span>
+            <span>{sidebarData.phoneDisplay}</span>
+            <span className="print-dot">·</span>
+            <span>{sidebarData.location}</span>
+          </div>
+        </div>
+      )}
+
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px', marginBottom: '30px' }}>
+        <h2 className="h2 article-title" style={{ margin: 0 }}>Resume</h2>
+        <button 
+          onClick={() => window.print()}
+          className="download-resume-btn"
+          data-track-click="download_resume_pdf"
+        >
+          <ion-icon name="download-outline"></ion-icon>
+          <span>Download PDF</span>
+        </button>
       </header>
 
       {/* Education */}

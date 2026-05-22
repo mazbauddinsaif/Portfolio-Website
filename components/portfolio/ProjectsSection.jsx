@@ -61,6 +61,7 @@ function ProjectModal({ project, onClose }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="project-action-btn btn-code"
+                data-track-click={`view_code_${project.title}`}
               >
                 <ion-icon name="logo-github"></ion-icon> View Code
               </a>
@@ -71,6 +72,7 @@ function ProjectModal({ project, onClose }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="project-action-btn btn-demo"
+                data-track-click={`view_demo_${project.title}`}
               >
                 <ion-icon name="open-outline"></ion-icon> Live Demo
               </a>

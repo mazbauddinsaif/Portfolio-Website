@@ -3125,3 +3125,323 @@ textarea.form-input::-webkit-resizer { display: none; }
   flex-wrap: wrap;
   gap: 10px;
 }
+
+/* Markdown Content Styling */
+.markdown-content {
+  color: var(--light-gray);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  color: var(--white-2);
+  margin-top: 30px;
+  margin-bottom: 15px;
+  font-weight: var(--fw-600);
+}
+
+.markdown-content h1 { font-size: 22px; }
+.markdown-content h2 { font-size: 18px; border-bottom: 1px solid var(--jet); padding-bottom: 8px; }
+.markdown-content h3 { font-size: 16px; }
+
+.markdown-content p {
+  margin-bottom: 20px;
+  text-align: justify;
+}
+
+.markdown-content a {
+  color: var(--orange-yellow-crayola);
+  text-decoration: underline;
+  transition: color 0.15s ease;
+}
+
+.markdown-content a:hover {
+  color: var(--vegas-gold);
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  margin-bottom: 20px;
+  padding-left: 20px;
+}
+
+.markdown-content ul {
+  list-style-type: disc;
+}
+
+.markdown-content ol {
+  list-style-type: decimal;
+}
+
+.markdown-content li {
+  margin-bottom: 8px;
+}
+
+.markdown-content blockquote {
+  border-left: 4px solid var(--orange-yellow-crayola);
+  padding: 10px 20px;
+  margin: 20px 0;
+  background: hsla(0, 0%, 25%, 0.1);
+  border-radius: 4px;
+  font-style: italic;
+  color: var(--light-gray-70);
+}
+
+.markdown-content pre {
+  background: hsl(240, 2%, 8%);
+  padding: 16px;
+  border-radius: 12px;
+  overflow-x: auto;
+  margin-bottom: 20px;
+  border: 1px solid var(--jet);
+}
+
+.markdown-content code {
+  font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+  font-size: 13px;
+  background: hsla(0, 0%, 25%, 0.2);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.markdown-content pre code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  display: block;
+}
+
+.markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.markdown-content th,
+.markdown-content td {
+  border: 1px solid var(--jet);
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.markdown-content th {
+  background: hsla(0, 0%, 25%, 0.15);
+  font-weight: var(--fw-600);
+}
+
+.markdown-content hr {
+  border: 0;
+  height: 1px;
+  background: var(--jet);
+  margin: 30px 0;
+}
+
+.markdown-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  margin: 20px 0;
+  display: block;
+}
+
+/* Download Resume Button Styling */
+.download-resume-btn {
+  position: relative;
+  background: var(--border-gradient-onyx);
+  color: var(--orange-yellow-crayola);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 14px;
+  font-size: var(--fs-7);
+  font-weight: var(--fw-600);
+  box-shadow: var(--shadow-3);
+  z-index: 1;
+  transition: var(--transition-1);
+  cursor: pointer;
+  border: none;
+}
+
+.download-resume-btn::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  background: var(--bg-gradient-jet);
+  border-radius: inherit;
+  z-index: -1;
+  transition: var(--transition-1);
+}
+
+.download-resume-btn:hover {
+  background: var(--bg-gradient-yellow-1);
+}
+
+.download-resume-btn:hover::before {
+  background: var(--bg-gradient-yellow-2);
+}
+
+.download-resume-btn ion-icon {
+  font-size: 16px;
+}
+
+/* Print Styling for PDF Resume Generation */
+.print-header {
+  display: none;
+}
+
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  main {
+    display: block !important;
+    background: #ffffff !important;
+  }
+
+  .sidebar,
+  .navbar,
+  .download-resume-btn,
+  .info_more-btn,
+  header {
+    display: none !important;
+  }
+
+  /* Hide the normal screen header inside resume section since print-header is used */
+  article.resume header {
+    display: none !important;
+  }
+
+  .main-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  article.resume {
+    display: block !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  .print-header {
+    display: block !important;
+    text-align: center;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #111;
+    padding-bottom: 15px;
+  }
+
+  .print-name {
+    font-size: 26px;
+    font-weight: 700;
+    color: #000000 !important;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .print-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #444444 !important;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .print-contact {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    font-size: 11px;
+    color: #555555 !important;
+  }
+
+  .print-dot {
+    font-weight: bold;
+    color: #555555 !important;
+  }
+
+  /* Print specific modifications for resume timeline and details */
+  .timeline-list {
+    border-left: 1px solid #ddd !important;
+  }
+
+  .timeline-item::after {
+    background: #ffffff !important;
+    border: 4px solid #111 !important;
+  }
+
+  .timeline-item-title,
+  .h3, .h4, .h5, .exp-sub-role-title {
+    color: #111111 !important;
+  }
+
+  .timeline-text,
+  .exp-sub-role-period,
+  .exp-sub-role-location,
+  .exp-org-meta {
+    color: #444444 !important;
+  }
+
+  .skills-list {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  .skills-item {
+    margin-bottom: 10px;
+  }
+
+  .skills-item .title-wrapper h5,
+  .skills-item .title-wrapper data {
+    color: #111111 !important;
+  }
+
+  .skill-progress-bg {
+    background: #eee !important;
+    border: 1px solid #ccc !important;
+    height: 6px !important;
+  }
+
+  .skill-progress-fill {
+    background: #111 !important;
+    height: 6px !important;
+  }
+
+  .skills-matrix-card {
+    background: transparent !important;
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    padding: 15px !important;
+  }
+
+  .skills-matrix-header h4 {
+    color: #111 !important;
+  }
+
+  .skill-tag {
+    background: #f0f0f0 !important;
+    color: #222 !important;
+    border: 1px solid #ccc !important;
+  }
+
+  .timeline-item, 
+  .skills-matrix-card,
+  .skills-item {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}
