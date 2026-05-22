@@ -3324,7 +3324,6 @@ textarea.form-input::-webkit-resizer { display: none; }
   .navbar,
   .download-resume-btn,
   .info_more-btn,
-  .skill-graph-container,
   header {
     display: none !important;
   }
