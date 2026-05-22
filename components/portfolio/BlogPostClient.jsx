@@ -6,10 +6,12 @@ import rehypeHighlight from 'rehype-highlight';
 import Sidebar from './Sidebar';
 import 'highlight.js/styles/github-dark.css';
 
-export default function BlogPostClient({ sidebarData, postData }) {
+export default function BlogPostClient({ sidebarData, postData, enableAnalytics }) {
   
   // Track page view for this specific blog post
   useEffect(() => {
+    if (enableAnalytics === false) return;
+
     const trackPageView = async () => {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
@@ -30,7 +32,7 @@ export default function BlogPostClient({ sidebarData, postData }) {
     };
 
     trackPageView();
-  }, [postData.slug]);
+  }, [postData.slug, enableAnalytics]);
 
   if (!postData) {
     return (

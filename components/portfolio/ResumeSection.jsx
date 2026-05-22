@@ -1,4 +1,5 @@
 'use client';
+import SkillGraph from './SkillGraph';
 
 export default function ResumeSection({ data, sidebarData, active }) {
   if (!data) return null;
@@ -126,6 +127,16 @@ export default function ResumeSection({ data, sidebarData, active }) {
       {/* Skills */}
       <section className="skill">
         <h3 className="h3 skills-title">My skills</h3>
+
+        {data.showSkillsGraph !== false && data.skillsGraph && data.skillsGraph.nodes && data.skillsGraph.nodes.length > 0 && (
+          <div className="skill-graph-container" style={{ marginBottom: '30px' }}>
+            <SkillGraph 
+              nodesData={data.skillsGraph.nodes} 
+              linksData={data.skillsGraph.links || []} 
+            />
+          </div>
+        )}
+
         <ul className="skills-list content-card">
           {(data.skills || []).map((s, i) => (
             <li key={i} className="skills-item">

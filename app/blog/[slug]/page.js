@@ -70,6 +70,7 @@ export default async function BlogPostPage({ params }) {
     <BlogPostClient 
       sidebarData={data?.sidebar} 
       postData={postData} 
+      enableAnalytics={data?.enableAnalytics}
     />
   );
 }

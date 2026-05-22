@@ -38,6 +38,8 @@ export default function PortfolioClient({ data }) {
 
   // Track page views
   useEffect(() => {
+    if (data?.enableAnalytics === false) return;
+
     const trackPageView = async () => {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
@@ -58,10 +60,12 @@ export default function PortfolioClient({ data }) {
     };
 
     trackPageView();
-  }, [activePage]);
+  }, [activePage, data?.enableAnalytics]);
 
   // Track clicks globally for elements with data-track-click attribute
   useEffect(() => {
+    if (data?.enableAnalytics === false) return;
+
     const handleGlobalClick = async (e) => {
       const trackable = e.target.closest('[data-track-click]');
       if (!trackable) return;
@@ -88,7 +92,7 @@ export default function PortfolioClient({ data }) {
 
     document.addEventListener('click', handleGlobalClick);
     return () => document.removeEventListener('click', handleGlobalClick);
-  }, [activePage]);
+  }, [activePage, data?.enableAnalytics]);
 
   useEffect(() => {
     document.title = `${data.sidebar?.name || 'Portfolio'} - Personal Portfolio`;
