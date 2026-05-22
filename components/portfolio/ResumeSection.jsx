@@ -22,14 +22,16 @@ export default function ResumeSection({ data, sidebarData, active }) {
 
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px', marginBottom: '30px' }}>
         <h2 className="h2 article-title" style={{ margin: 0 }}>Resume</h2>
-        <button 
-          onClick={() => window.print()}
-          className="download-resume-btn"
-          data-track-click="download_resume_pdf"
-        >
-          <ion-icon name="download-outline"></ion-icon>
-          <span>Download PDF</span>
-        </button>
+        {data.showDownloadPDF !== false && (
+          <button 
+            onClick={() => window.print()}
+            className="download-resume-btn"
+            data-track-click="download_resume_pdf"
+          >
+            <ion-icon name="download-outline"></ion-icon>
+            <span>Download PDF</span>
+          </button>
+        )}
       </header>
 
       {/* Education */}
