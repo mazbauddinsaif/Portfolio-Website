@@ -1,49 +1,34 @@
-import PortfolioClient from '@/components/portfolio/PortfolioClient';
-
-export const dynamic = 'force-dynamic';
-
-async function getPortfolioData() {
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-  try {
-    const res = await fetch(`${apiBaseUrl}/api/portfolio`, {
-      cache: 'no-store' // or next: { revalidate: 3600 } for ISR caching
-    });
-    if (!res.ok) {
-      throw new Error(`API returned status ${res.status}`);
-    }
-    return await res.json();
-  } catch (error) {
-    console.error('Failed to fetch portfolio data from backend:', error);
-    return null;
-  }
-}
+import { getPortfolioData } from '@/lib/data';
+import Hero from '@/components/sections/Hero';
+import About from '@/components/sections/About';
+import Experience from '@/components/sections/Experience';
+import Publications from '@/components/sections/Publications';
+import Certifications from '@/components/sections/Certifications';
+import Contact from '@/components/sections/Contact';
 
 export default async function HomePage() {
   const data = await getPortfolioData();
+  const sidebar = data?.sidebar || {};
+  const achievements = data?.achievements || [];
+  const publications = data?.publications || [];
 
-  if (!data) {
-    return (
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'column',
-        gap: '20px',
-        background: 'hsl(240, 2%, 12%)',
-        color: 'white',
-        fontFamily: 'Poppins, sans-serif',
-        textAlign: 'center',
-        padding: '20px'
-      }}>
-        <h1>Portfolio Offline</h1>
-        <p>Could not connect to the Backend API.</p>
-        <p style={{ color: '#999', fontSize: '14px' }}>
-          Please verify that the backend server is running and configured correctly.
-        </p>
-      </div>
-    );
-  }
+  const totalCerts = achievements.reduce((n, g) => n + (g.certs?.length || 0), 0);
 
-  return <PortfolioClient data={data} />;
+  const stats = [
+    { num: `${totalCerts}+`, label: 'Certifications & awards' },
+    { num: `${publications.length}`, label: 'Publications' },
+    { num: '37th', label: 'NSU admission rank' },
+    { num: '75%', label: 'Merit scholarship' },
+  ];
+
+  return (
+    <>
+      <Hero sidebar={sidebar} stats={stats} />
+      <About about={data?.about || {}} />
+      <Experience resume={data?.resume || {}} />
+      <Publications publications={publications} preview />
+      <Certifications achievements={achievements} />
+      <Contact sidebar={sidebar} />
+    </>
+  );
 }
