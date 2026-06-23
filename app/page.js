@@ -1,5 +1,6 @@
 import { getPortfolioData } from '@/lib/data';
 import Hero from '@/components/sections/Hero';
+import Stats from '@/components/sections/Stats';
 import About from '@/components/sections/About';
 import Experience from '@/components/sections/Experience';
 import Publications from '@/components/sections/Publications';
@@ -23,7 +24,8 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero sidebar={sidebar} stats={stats} />
+      <Hero sidebar={sidebar} />
+      <Stats stats={stats} />
       <About about={data?.about || {}} />
       <Experience resume={data?.resume || {}} />
       <Publications publications={publications} preview />
