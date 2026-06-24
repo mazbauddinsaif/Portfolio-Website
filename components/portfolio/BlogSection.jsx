@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import SafeImage from './SafeImage';
 
 const getExcerpt = (markdown) => {
   if (!markdown) return '';
@@ -51,7 +52,7 @@ export default function BlogSection({ data, active }) {
                 <a href={`/blog/${post.slug}`}>
                   <figure className="blog-banner-box">
                     {post.coverImage ? (
-                      <img src={post.coverImage} alt={post.title} loading="lazy" />
+                      <SafeImage src={post.coverImage} alt={post.title} loading="lazy" />
                     ) : (
                       <div className="blog-banner-placeholder" style={{
                         height: '100%',

@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
+import SafeImage from './SafeImage';
 
 function formatRepoName(name) {
   return name.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -32,7 +33,7 @@ function ProjectModal({ project, onClose }) {
         </button>
 
         <figure className="project-modal-img">
-          <img src={project.image} alt={project.title} />
+          <SafeImage src={project.image} alt={project.title} loading="eager" />
         </figure>
 
         <div className="project-modal-body">

@@ -8,6 +8,7 @@ import AchievementsSection from './AchievementsSection';
 import ProjectsSection from './ProjectsSection';
 import BlogSection from './BlogSection';
 import ContactSection from './ContactSection';
+import ImagePrefetch from './ImagePrefetch';
 
 const VALID_PAGES = ['about', 'resume', 'achievements', 'projects', 'blog', 'contact'];
 
@@ -109,6 +110,7 @@ export default function PortfolioClient({ data }) {
 
   return (
     <main>
+      <ImagePrefetch data={data} />
       <Sidebar data={data.sidebar} />
       <div className="main-content">
         <Navbar activePage={activePage} setActivePage={navigateTo} />

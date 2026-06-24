@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import SafeImage from './SafeImage';
 
 const groupDefs = [
   { name: "Scholarships &amp; Leadership", icon: "trophy-outline" },
@@ -12,7 +13,7 @@ function CertCard({ cert, onClick }) {
     <li className="cert-item">
       <button className="cert-card" onClick={() => onClick(cert)}>
         <figure className="cert-img-box">
-          <img src={cert.img} alt={cert.cardTitle} loading="lazy" />
+          <SafeImage src={cert.img} alt={cert.cardTitle} loading="lazy" />
           <div className="cert-hover-overlay"><ion-icon name="expand-outline"></ion-icon></div>
         </figure>
         <div className="cert-info">
@@ -33,6 +34,21 @@ function CertCard({ cert, onClick }) {
 export default function AchievementsSection({ data, active }) {
   const [viewMode, setViewMode] = useState('category');
   const [modalCert, setModalCert] = useState(null);
+
+  // Close modal on Escape and lock body scroll while it is open.
+  useEffect(() => {
+    if (!modalCert) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape') setModalCert(null);
+    };
+    document.addEventListener('keydown', onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [modalCert]);
 
   if (!data) return null;
 
@@ -145,7 +161,7 @@ export default function AchievementsSection({ data, active }) {
           </button>
           {modalCert && (
             <>
-              <img src={modalCert.img} alt={modalCert.title} className="cert-modal-img" />
+              <SafeImage src={modalCert.img} alt={modalCert.title} className="cert-modal-img" loading="eager" fetchPriority="high" />
               <div className="cert-modal-info">
                 <h3 className="h3">{modalCert.title}</h3>
                 <p>{modalCert.issuer}</p>

@@ -1,4 +1,5 @@
 'use client';
+import SafeImage from './SafeImage';
 
 export default function AboutSection({ data, active }) {
   if (!data) return null;
@@ -51,7 +52,7 @@ export default function AboutSection({ data, active }) {
           {(data.services || []).map((s, i) => (
             <li key={i} className="service-item">
               <div className="service-icon-box">
-                <img src={s.icon} alt={s.iconAlt || s.title} width="40" />
+                <SafeImage src={s.icon} alt={s.iconAlt || s.title} width={40} height={40} />
               </div>
               <div className="service-content-box">
                 <h4 className="h4 service-item-title">{s.title}</h4>
@@ -68,7 +69,7 @@ export default function AboutSection({ data, active }) {
           {(data.workedWithList || []).map((c, i) => (
             <li key={i} className="worked-with-item">
               <a href={c.url} target="_blank" rel="noopener noreferrer">
-                <img src={c.logo} alt="organization logo" />
+                <SafeImage src={c.logo} alt="organization logo" />
               </a>
             </li>
           ))}
