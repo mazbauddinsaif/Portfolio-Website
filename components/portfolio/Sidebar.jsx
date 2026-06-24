@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import SafeImage from './SafeImage';
 
 export default function Sidebar({ data }) {
   const [expanded, setExpanded] = useState(false);
@@ -9,7 +10,16 @@ export default function Sidebar({ data }) {
     <aside className={`sidebar${expanded ? ' active' : ''}`}>
       <div className="sidebar-info">
         <figure className={`avatar-box ${data.avatarShape || 'round'}`}>
-          {data.avatar && <img src={data.avatar} alt={data.name} width="80" />}
+          {data.avatar && (
+            <SafeImage
+              src={data.avatar}
+              alt={data.name}
+              width={80}
+              height={80}
+              loading="eager"
+              fetchPriority="high"
+            />
+          )}
         </figure>
         <div className="info-content">
           <h1 className="name" title={data.name}>{data.name}</h1>

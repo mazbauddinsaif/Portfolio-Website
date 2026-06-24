@@ -1,4 +1,5 @@
 'use client';
+import SafeImage from './SafeImage';
 
 export default function ResumeSection({ data, sidebarData, active }) {
   if (!data) return null;
@@ -43,7 +44,7 @@ export default function ResumeSection({ data, sidebarData, active }) {
         <ol className="timeline-list">
           {(data.education || []).map((e, i) => {
             const logoHtml = e.logo
-              ? <img src={e.logo} alt={`${e.institution} logo`} className="exp-org-logo" />
+              ? <SafeImage src={e.logo} alt={`${e.institution} logo`} className="exp-org-logo" />
               : <div className="exp-org-logo-placeholder"></div>;
 
             const headerInner = (
@@ -85,7 +86,7 @@ export default function ResumeSection({ data, sidebarData, active }) {
             metaParts.push(org.period);
 
             const logoHtml = org.logo
-              ? <img src={org.logo} alt={`${org.organization} logo`} className="exp-org-logo" />
+              ? <SafeImage src={org.logo} alt={`${org.organization} logo`} className="exp-org-logo" />
               : <div className="exp-org-logo-placeholder"></div>;
 
             const headerInner = (

@@ -3452,10 +3452,24 @@ textarea.form-input::-webkit-resizer { display: none; }
     border: 1px solid #ccc !important;
   }
 
-  .timeline-item, 
+  .timeline-item,
   .skills-matrix-card,
   .skills-item {
     page-break-inside: avoid;
     break-inside: avoid;
   }
+}
+
+/*-----------------------------------*\
+  #SafeImage fallback (broken/missing image)
+\*-----------------------------------*/
+.img-fallback {
+  display: inline-block;
+  background: var(--eerie-black-1, hsl(240, 2%, 13%));
+  background-image: linear-gradient(135deg, hsla(0, 0%, 100%, 0.04), hsla(0, 0%, 100%, 0.08));
+  border-radius: inherit;
+  min-width: 24px;
+  min-height: 24px;
+  width: 100%;
+  height: 100%;
 }
