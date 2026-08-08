@@ -1,0 +1,167 @@
+'use client';
+import { useCallback, useState } from 'react';
+import { FiGrid, FiClock, FiExternalLink } from 'react-icons/fi';
+import Section from './ui/Section';
+import Reveal from './ui/Reveal';
+import Modal from './ui/Modal';
+import SafeImage from './ui/SafeImage';
+import { decodeEntities } from './ui/text';
+
+const GROUPS = ['Scholarships &amp; Leadership', 'Academic Honors', 'Cultural &amp; Extracurricular'];
+
+function CertCard({ cert, onOpen }) {
+  return (
+    <li>
+      <button type="button" onClick={() => onOpen(cert)} className="group block w-full text-left">
+        <div className="relative aspect-[4/3] overflow-hidden rounded border border-line bg-bg-2">
+          <SafeImage
+            src={cert.img}
+            alt={cert.cardTitle}
+            className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+          />
+        </div>
+        <h4 className="mt-3 line-clamp-1 text-sm font-semibold transition-colors group-hover:text-accent-text">
+          {decodeEntities(cert.cardTitle)}
+        </h4>
+        <p className="mt-0.5 line-clamp-1 text-xs text-ink-muted">{decodeEntities(cert.cardIssuer)}</p>
+        <p className="mt-1 text-[0.6875rem] tracking-wider text-ink-faint uppercase">{cert.year}</p>
+      </button>
+    </li>
+  );
+}
+
+export default function Achievements({ achievements }) {
+  const [view, setView] = useState('category');
+  const [modalCert, setModalCert] = useState(null);
+  const close = useCallback(() => setModalCert(null), []);
+
+  if (!achievements?.length) return null;
+
+  const total = achievements.reduce((s, c) => s + (c.certs?.length || 0), 0);
+
+  const groupMap = {};
+  GROUPS.forEach((g) => (groupMap[g] = []));
+  achievements.forEach((cat) => {
+    const g = cat.group || GROUPS[0];
+    if (!groupMap[g]) groupMap[g] = [];
+    groupMap[g].push(cat);
+  });
+
+  const allCerts = achievements.flatMap((cat) => cat.certs || []);
+  const parseYear = (y) => {
+    const m = String(y).match(/\d{4}/g);
+    return m ? parseInt(m[m.length - 1]) : 0;
+  };
+  const sorted = [...allCerts].sort((a, b) => parseYear(b.year) - parseYear(a.year));
+  const yearOrder = [];
+  const yearMap = {};
+  sorted.forEach((c) => {
+    if (!yearMap[c.year]) {
+      yearMap[c.year] = [];
+      yearOrder.push(c.year);
+    }
+    yearMap[c.year].push(c);
+  });
+
+  return (
+    <Section
+      id="achievements"
+      title="Achievements"
+      eyebrow={`${total} certificates`}
+      aside={
+        <div className="flex overflow-hidden rounded border border-line">
+          <button
+            type="button"
+            title="Category view"
+            onClick={() => setView('category')}
+            className={`grid size-9 place-items-center transition-colors ${
+              view === 'category' ? 'bg-accent text-accent-ink' : 'text-ink-muted hover:text-ink'
+            }`}
+          >
+            <FiGrid size={14} />
+          </button>
+          <button
+            type="button"
+            title="Timeline view"
+            onClick={() => setView('timeline')}
+            className={`grid size-9 place-items-center transition-colors ${
+              view === 'timeline' ? 'bg-accent text-accent-ink' : 'text-ink-muted hover:text-ink'
+            }`}
+          >
+            <FiClock size={14} />
+          </button>
+        </div>
+      }
+    >
+      {view === 'category' ? (
+        <div className="flex flex-col gap-16">
+          {GROUPS.filter((g) => groupMap[g]?.length).map((g, gi) => (
+            <div key={gi}>
+              <Reveal className="mb-8 flex items-baseline gap-4">
+                <h3 className="display text-2xl text-ink-faint sm:text-3xl">{decodeEntities(g)}</h3>
+                <span className="text-xs text-ink-faint">
+                  {groupMap[g].reduce((s, c) => s + (c.certs?.length || 0), 0)} certificates
+                </span>
+              </Reveal>
+              {groupMap[g].map((cat, ci) => (
+                <div key={ci} className="mb-10 last:mb-0">
+                  <Reveal className="eyebrow mb-5">{decodeEntities(cat.title)}</Reveal>
+                  <ul className="grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
+                    {(cat.certs || []).map((cert, ki) => (
+                      <CertCard key={ki} cert={cert} onOpen={setModalCert} />
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col gap-14">
+          {yearOrder.map((year, yi) => (
+            <div key={yi} className="grid gap-6 md:grid-cols-[120px_1fr]">
+              <Reveal>
+                <span className="display sticky top-24 text-3xl text-accent-text">{year}</span>
+              </Reveal>
+              <ul className="grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3">
+                {yearMap[year].map((cert, ci) => (
+                  <CertCard key={ci} cert={cert} onOpen={setModalCert} />
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <Modal open={Boolean(modalCert)} onClose={close} label={modalCert?.title}>
+        {modalCert && (
+          <>
+            <div className="max-h-[60vh] overflow-hidden border-b border-line bg-bg-2">
+              <SafeImage
+                src={modalCert.img}
+                alt={modalCert.title}
+                loading="eager"
+                fetchPriority="high"
+                className="size-full object-contain"
+              />
+            </div>
+            <div className="p-6 sm:p-8">
+              <h3 className="text-lg font-semibold">{decodeEntities(modalCert.title)}</h3>
+              <p className="mt-1 text-sm text-ink-muted">{decodeEntities(modalCert.issuer)}</p>
+              {modalCert.verifyUrl && (
+                <a
+                  href={modalCert.verifyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-ghost mt-5"
+                >
+                  <FiExternalLink size={13} /> Verify Credential
+                </a>
+              )}
+            </div>
+          </>
+        )}
+      </Modal>
+    </Section>
+  );
+}

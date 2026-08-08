@@ -1,33 +1,34 @@
-import { Poppins } from "next/font/google";
-import "./globals.css";
-import Script from "next/script";
+import { Anton, Inter } from 'next/font/google';
+import Script from 'next/script';
+import './globals.css';
 
-const poppins = Poppins({
-  weight: ["300", "400", "500", "600"],
-  subsets: ["latin"],
-  display: "swap",
+const anton = Anton({
+  weight: '400',
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-anton',
+});
+
+const inter = Inter({
+  weight: ['400', '500', '600', '700'],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
 });
 
 export const metadata = {
-  title: "Mazba Uddin Saif - Personal Portfolio",
-  description: "Personal portfolio of Mazba Uddin Saif — Junior Software Developer, Instructor, and Computer Science undergraduate at North South University.",
+  title: 'Mazba Uddin Saif — Software Developer',
+  description:
+    'Personal portfolio of Mazba Uddin Saif — Junior Software Developer, Instructor, and Computer Science undergraduate at North South University.',
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={poppins.className}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${anton.variable} ${inter.variable} antialiased`}>
+        {/* Sets .dark before paint so a dark-mode visitor never sees a white flash. */}
+        <Script src="/theme-init.js" strategy="beforeInteractive" />
         {children}
-        <Script
-          type="module"
-          src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
-          strategy="afterInteractive"
-        />
-        <Script
-          noModule
-          src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   );

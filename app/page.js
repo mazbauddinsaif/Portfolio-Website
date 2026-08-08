@@ -1,4 +1,4 @@
-import PortfolioClient from '@/components/portfolio/PortfolioClient';
+import SiteShell from '@/components/site/SiteShell';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,27 +23,15 @@ export default async function HomePage() {
 
   if (!data) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'column',
-        gap: '20px',
-        background: 'hsl(240, 2%, 12%)',
-        color: 'white',
-        fontFamily: 'Poppins, sans-serif',
-        textAlign: 'center',
-        padding: '20px'
-      }}>
-        <h1>Portfolio Offline</h1>
-        <p>Could not connect to the Backend API.</p>
-        <p style={{ color: '#999', fontSize: '14px' }}>
+      <div className="flex min-h-svh flex-col items-center justify-center gap-4 px-5 text-center">
+        <h1 className="display text-5xl">Portfolio Offline</h1>
+        <p className="text-sm text-ink-muted">Could not connect to the Backend API.</p>
+        <p className="text-xs text-ink-faint">
           Please verify that the backend server is running and configured correctly.
         </p>
       </div>
     );
   }
 
-  return <PortfolioClient data={data} />;
+  return <SiteShell data={data} />;
 }
