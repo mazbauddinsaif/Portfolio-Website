@@ -68,7 +68,7 @@ export default function SiteShell({ data }) {
         <Hero sidebar={data.sidebar} about={data.about} contact={data.contact} resume={data.resume} portfolio={data.portfolio} achievements={data.achievements} />
         <About about={data.about} />
         <Stack skillsMatrix={data.resume?.skillsMatrix} />
-        <Experience experience={data.resume?.experience} sidebar={data.sidebar} />
+        <Experience experience={data.resume?.experience} sidebar={data.sidebar} showDownloadPDF={data.resume?.showDownloadPDF} />
         <Education education={data.resume?.education} />
         <Projects portfolio={data.portfolio} />
         <Achievements achievements={data.achievements} />

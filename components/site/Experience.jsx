@@ -19,7 +19,7 @@ function yearLabel(orgPeriod, roles) {
   return '';
 }
 
-export default function Experience({ experience, sidebar }) {
+export default function Experience({ experience, sidebar, showDownloadPDF = true }) {
   const listRef = useRef(null);
   const reduce = useReducedMotion();
   // Line grows as the timeline scrolls through the viewport.
@@ -51,7 +51,7 @@ export default function Experience({ experience, sidebar }) {
         title="My Experience"
         eyebrow="Career"
         printSection
-        aside={
+        aside={showDownloadPDF === false ? null : (
           <button
             type="button"
             onClick={() => window.print()}
@@ -60,7 +60,7 @@ export default function Experience({ experience, sidebar }) {
           >
             <FiDownload size={13} /> Resume PDF
           </button>
-        }
+        )}
       >
         <div ref={listRef} className="relative">
           {/* Timeline spine: static hairline + accent line that grows with scroll. */}
