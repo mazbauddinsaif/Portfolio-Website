@@ -2,7 +2,6 @@ import Section from './ui/Section';
 import Reveal from './ui/Reveal';
 import RichText from './ui/RichText';
 import SafeImage from './ui/SafeImage';
-import Marquee from './ui/Marquee';
 
 /* Theme-aware portrait: overwrite these two files to change the photos.
    portrait-light.jpg shows in light mode, portrait-dark.jpg in dark mode. */
@@ -55,21 +54,36 @@ export default function About({ about }) {
       </div>
 
       {(about.workedWithList || []).length > 0 && (
-        <Reveal className="mt-16">
-          <p className="eyebrow mb-6">Worked with</p>
-          <Marquee>
-            {about.workedWithList.map((c, i) => (
-              <a
-                key={i}
-                href={c.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mx-8 inline-flex h-12 w-28 items-center justify-center opacity-60 grayscale transition hover:opacity-100 hover:grayscale-0"
-              >
-                <SafeImage src={c.logo} alt="organization logo" className="max-h-12 max-w-28 object-contain" />
-              </a>
-            ))}
-          </Marquee>
+        <Reveal className="mt-20">
+          <div className="mb-8 flex items-center gap-5">
+            <p className="eyebrow shrink-0">Worked with</p>
+            <span className="h-px flex-1 bg-line" />
+          </div>
+          {/* Bordered logo tiles — reads as a deliberate roster, not a stray strip. */}
+          <ul className="grid grid-cols-2 gap-px overflow-hidden rounded border border-line bg-line sm:grid-cols-3 lg:grid-cols-4">
+            {about.workedWithList.map((c, i) => {
+              const tile = (
+                <span className="flex h-24 items-center justify-center bg-bg-1 p-6 transition-colors group-hover:bg-bg-2">
+                  <SafeImage
+                    src={c.logo}
+                    alt="organization logo"
+                    className="max-h-12 max-w-full object-contain opacity-70 grayscale transition duration-300 group-hover:opacity-100 group-hover:grayscale-0"
+                  />
+                </span>
+              );
+              return (
+                <li key={i} className="group">
+                  {c.url ? (
+                    <a href={c.url} target="_blank" rel="noopener noreferrer" className="block">
+                      {tile}
+                    </a>
+                  ) : (
+                    tile
+                  )}
+                </li>
+              );
+            })}
+          </ul>
         </Reveal>
       )}
     </Section>

@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef } from 'react';
+import ThemeScope from './ThemeScope';
 import Nav from './Nav';
 import Footer from './Footer';
 import Hero from './Hero';
@@ -25,13 +26,6 @@ function track(body) {
 export default function SiteShell({ data }) {
   const analyticsOff = data?.enableAnalytics === false;
   const seen = useRef(new Set());
-  const theme = data?.siteTheme === 'cobalt' ? 'cobalt' : 'lime';
-
-  // Mirror the accent theme onto <html> so ::selection, scrollbar and the
-  // body background (all outside this wrapper) pick it up too.
-  useEffect(() => {
-    document.documentElement.classList.toggle('theme-cobalt', theme === 'cobalt');
-  }, [theme]);
 
   // Pageview per section: fires once per section per visit as it scrolls into view.
   useEffect(() => {
@@ -67,7 +61,8 @@ export default function SiteShell({ data }) {
   }, [analyticsOff]);
 
   return (
-    <div id="top" className={theme === 'cobalt' ? 'theme-cobalt bg-bg-0 text-ink' : ''}>
+    <ThemeScope theme={data?.siteTheme}>
+      <div id="top" />
       <Nav name={data.sidebar?.name} />
       <main>
         <Hero sidebar={data.sidebar} about={data.about} contact={data.contact} resume={data.resume} portfolio={data.portfolio} achievements={data.achievements} />
@@ -81,6 +76,6 @@ export default function SiteShell({ data }) {
         <Contact contact={data.contact} sidebar={data.sidebar} />
       </main>
       <Footer sidebar={data.sidebar} />
-    </div>
+    </ThemeScope>
   );
 }

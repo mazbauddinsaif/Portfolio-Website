@@ -335,24 +335,8 @@
 .contrib-level-3 { background: color-mix(in srgb, var(--c-accent) 78%, var(--c-bg-2)); }
 .contrib-level-4 { background: var(--c-accent); }
 
-/*-----------------------------------*\
-  #MARQUEE
-\*-----------------------------------*/
-
-@keyframes marquee-scroll {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-.marquee-track {
-  display: flex;
-  width: max-content;
-  animation: marquee-scroll var(--marquee-duration, 32s) linear infinite;
-}
-.marquee-wrap:hover .marquee-track { animation-play-state: paused; }
-
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .marquee-track { animation: none; }
 }
 
 /*-----------------------------------*\

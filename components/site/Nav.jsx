@@ -1,15 +1,19 @@
 'use client';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { FiMenu, FiX } from 'react-icons/fi';
 import ThemeToggle from './ThemeToggle';
 
+/* Absolute hrefs so the nav also works from /play and /blog/[slug].
+   `wide` links only appear once there is room for them (xl+); the mobile
+   overlay always lists everything. */
 const LINKS = [
   { id: 'about', label: 'About' },
   { id: 'stack', label: 'Stack' },
   { id: 'experience', label: 'Experience' },
   { id: 'projects', label: 'Projects' },
-  { id: 'achievements', label: 'Achievements' },
-  { id: 'blog', label: 'Blog' },
+  { id: 'achievements', label: 'Achievements', wide: true },
+  { id: 'blog', label: 'Blog', wide: true },
 ];
 
 export default function Nav({ name = 'Portfolio' }) {
@@ -40,29 +44,29 @@ export default function Nav({ name = 'Portfolio' }) {
       }`}
     >
       <nav className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-5 md:px-10">
-        <a href="#top" className="display text-xl tracking-wide" onClick={() => setOpen(false)}>
+        <Link href="/" className="display text-xl tracking-wide" onClick={() => setOpen(false)}>
           {first}
           <span className="text-accent-text">.</span>
-        </a>
+        </Link>
 
-        <ul className="hidden items-center gap-7 lg:flex">
+        <ul className="hidden items-center gap-6 lg:flex xl:gap-7">
           {LINKS.map((l) => (
-            <li key={l.id}>
-              <a
-                href={`#${l.id}`}
+            <li key={l.id} className={l.wide ? 'hidden xl:block' : undefined}>
+              <Link
+                href={`/#${l.id}`}
                 className="text-[0.8125rem] font-medium text-ink-muted transition-colors hover:text-ink"
               >
                 {l.label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
 
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          <a href="#contact" className="btn-accent hidden sm:inline-flex" data-track-click="nav_lets_talk">
-            Let&apos;s Talk
-          </a>
+          <Link href="/play" className="btn-accent hidden sm:inline-flex" data-track-click="nav_play_with_me">
+            Play With Me
+          </Link>
           <button
             type="button"
             className="grid size-9 place-items-center rounded-full border border-line text-ink lg:hidden"
@@ -80,21 +84,24 @@ export default function Nav({ name = 'Portfolio' }) {
           <ul className="flex flex-1 flex-col justify-center gap-2 px-8">
             {LINKS.map((l, i) => (
               <li key={l.id}>
-                <a
-                  href={`#${l.id}`}
+                <Link
+                  href={`/#${l.id}`}
                   onClick={() => setOpen(false)}
                   className="display block py-2 text-5xl text-ink-muted transition-colors hover:text-ink"
                 >
                   <span className="mr-4 text-base text-accent-text">_0{i + 1}.</span>
                   {l.label}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
-          <div className="px-8 pb-10">
-            <a href="#contact" onClick={() => setOpen(false)} className="btn-accent w-full justify-center">
+          <div className="flex flex-col gap-3 px-8 pb-10">
+            <Link href="/play" onClick={() => setOpen(false)} className="btn-accent w-full justify-center">
+              Play With Me
+            </Link>
+            <Link href="/#contact" onClick={() => setOpen(false)} className="btn-ghost w-full justify-center">
               Let&apos;s Talk
-            </a>
+            </Link>
           </div>
         </div>
       )}

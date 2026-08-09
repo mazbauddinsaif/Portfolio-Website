@@ -1,17 +1,19 @@
 'use client';
 import { useEffect } from 'react';
+import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import { FiArrowLeft } from 'react-icons/fi';
 import Nav from './Nav';
 import Footer from './Footer';
+import ThemeScope from './ThemeScope';
 import SafeImage from './ui/SafeImage';
 import 'highlight.js/styles/github-dark.css';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-export default function BlogPost({ sidebarData, postData, enableAnalytics }) {
+export default function BlogPost({ sidebarData, postData, enableAnalytics, siteTheme }) {
   useEffect(() => {
     if (enableAnalytics === false || !postData?.slug) return;
     fetch(`${API_URL}/api/analytics/track`, {
@@ -30,23 +32,23 @@ export default function BlogPost({ sidebarData, postData, enableAnalytics }) {
       <div className="flex min-h-svh flex-col items-center justify-center gap-4 px-5 text-center">
         <h1 className="display text-5xl">Not Found</h1>
         <p className="text-sm text-ink-muted">The requested blog post could not be found.</p>
-        <a href="/#blog" className="btn-ghost mt-2">
+        <Link href="/#blog" className="btn-ghost mt-2">
           <FiArrowLeft size={13} /> Back to Blog
-        </a>
+        </Link>
       </div>
     );
   }
 
   return (
-    <>
+    <ThemeScope theme={siteTheme}>
       <Nav name={sidebarData?.name} />
       <main className="mx-auto w-full max-w-3xl px-5 pt-28 pb-20 md:px-8">
-        <a
+        <Link
           href="/#blog"
           className="mb-10 inline-flex items-center gap-2 text-xs font-medium tracking-wider text-ink-muted uppercase transition-colors hover:text-accent-text"
         >
           <FiArrowLeft size={13} /> Back to Blog
-        </a>
+        </Link>
 
         <header className="mb-10">
           <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -79,6 +81,6 @@ export default function BlogPost({ sidebarData, postData, enableAnalytics }) {
         </div>
       </main>
       <Footer sidebar={sidebarData} />
-    </>
+    </ThemeScope>
   );
 }

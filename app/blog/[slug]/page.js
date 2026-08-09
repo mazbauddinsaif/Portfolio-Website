@@ -71,6 +71,7 @@ export default async function BlogPostPage({ params }) {
       sidebarData={data?.sidebar}
       postData={postData}
       enableAnalytics={data?.enableAnalytics}
+      siteTheme={data?.siteTheme}
     />
   );
 }

@@ -1,9 +1,12 @@
-/* Runs before paint so a dark-mode visitor never sees a white flash. */
+/* Runs before paint so the visitor never sees a flash of the wrong theme.
+   Precedence: the visitor's own toggle choice > the admin's default mode
+   (server-rendered onto <html data-default-mode>) > dark. */
 (function () {
   try {
-    var s = localStorage.getItem('theme');
-    var d = s ? s === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (d) document.documentElement.classList.add('dark');
+    var saved = localStorage.getItem('theme');
+    var fallback = document.documentElement.getAttribute('data-default-mode') || 'dark';
+    var dark = saved ? saved === 'dark' : fallback !== 'light';
+    document.documentElement.classList.toggle('dark', dark);
   } catch (e) {
     document.documentElement.classList.add('dark');
   }

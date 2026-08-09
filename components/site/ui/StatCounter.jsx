@@ -10,6 +10,9 @@ export default function StatCounter({ value, suffix = '+', label, align = 'left'
 
   useEffect(() => {
     if (reduce) {
+      // prefers-reduced-motion is client-only, so the count has to be
+      // corrected after mount; a lazy initialiser would break hydration.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDisplay(value);
       return;
     }

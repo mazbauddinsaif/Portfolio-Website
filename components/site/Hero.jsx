@@ -1,6 +1,7 @@
 'use client';
+import Link from 'next/link';
 import { motion, useReducedMotion } from 'motion/react';
-import { FiArrowDown } from 'react-icons/fi';
+import { FiArrowDown, FiPlay } from 'react-icons/fi';
 import StatCounter from './ui/StatCounter';
 
 /* Years of experience = earliest year found in resume.experience periods → now. */
@@ -26,17 +27,27 @@ export default function Hero({ sidebar, about, contact, resume, portfolio, achie
   const projectCount = Math.max(portfolio?.projects?.length || 0, 5);
   const certCount = (achievements || []).reduce((s, c) => s + (c.certs?.length || 0), 0);
 
-  // "Junior Software Developer | Instructor" → two display lines.
-  const titleWords = (sidebar?.title || 'Software Developer').split('|')[0].trim();
-  const intro = firstSentence(about?.paragraphs?.[0]);
+  // "Junior Software Developer | Instructor" → stacked display lines.
+  const titleWords = (sidebar?.title || 'Software Developer').split('|')[0].trim().split(' ');
+  const intro = firstSentence(about?.paragraphs?.[0]) || `Hi, I'm ${sidebar?.name?.split(' ')[0] || 'a developer'} — I build web products.`;
 
   const rise = (delay) =>
     reduce
       ? {}
       : {
-          initial: { opacity: 0, y: 28 },
+          initial: { opacity: 0, y: 24 },
           animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] },
+          transition: { duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] },
+        };
+
+  // Each title word rises out of a clipping mask with a slight blur, staggered.
+  const word = (i) =>
+    reduce
+      ? {}
+      : {
+          initial: { y: '100%', opacity: 0, filter: 'blur(6px)' },
+          animate: { y: 0, opacity: 1, filter: 'blur(0px)' },
+          transition: { duration: 0.7, delay: 0.1 + i * 0.14, ease: [0.22, 1, 0.36, 1] },
         };
 
   return (
@@ -63,39 +74,38 @@ export default function Hero({ sidebar, about, contact, resume, portfolio, achie
         </a>
       )}
 
-      <div className="mx-auto grid w-full max-w-7xl flex-1 grid-cols-1 content-center gap-16 px-5 pt-6 pb-12 md:px-10 lg:grid-cols-[1.7fr_auto] lg:items-end">
-        <div className="lg:pb-6">
-          <motion.h1
-            {...rise(0.08)}
-            className="display text-[15vw] leading-[0.9] sm:text-[11.5vw] lg:text-[7.25rem]"
-          >
-            {titleWords.split(' ').map((w, i, arr) => (
-              <span key={i} className={i === 0 ? 'block text-accent-text' : 'block'}>
-                {w}
+      <div className="mx-auto grid w-full max-w-7xl flex-1 grid-cols-1 content-center gap-12 px-5 pt-4 pb-10 md:px-10 lg:grid-cols-[1.7fr_auto] lg:items-center lg:gap-20">
+        <div>
+          <h1 className="display text-[15vw] leading-[0.92] sm:text-[11.5vw] lg:text-[7rem]">
+            {titleWords.map((w, i) => (
+              <span key={i} className="block overflow-hidden">
+                <motion.span
+                  {...word(i)}
+                  className={`block ${i === 0 ? 'text-accent-text' : ''}`}
+                >
+                  {w}
+                </motion.span>
               </span>
             ))}
-          </motion.h1>
+          </h1>
 
-          <motion.div {...rise(0.16)} className="mt-10 max-w-xl">
-            <p className="text-base leading-relaxed text-ink-muted sm:text-lg">
-              {intro || `Hi, I'm ${sidebar?.name?.split(' ')[0] || 'a developer'} — I build web products.`}
-            </p>
-            <div className="mt-9 flex flex-wrap items-center gap-4">
-              <a href="#contact" className="btn-accent" data-track-click="hero_lets_talk">
-                Let&apos;s Talk
-              </a>
+          <motion.div {...rise(0.55)} className="mt-9 max-w-lg">
+            <p className="text-[0.9375rem] leading-relaxed text-ink-muted sm:text-base">{intro}</p>
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <Link href="/play" className="btn-accent" data-track-click="hero_play_with_me">
+                <FiPlay size={13} /> Play With Me
+              </Link>
               <a href="#projects" className="btn-ghost" data-track-click="hero_see_work">
                 See Work <FiArrowDown size={13} />
               </a>
             </div>
-
           </motion.div>
         </div>
 
-        {/* Stats stacked vertically, pinned bottom-right — tajmirul-style. */}
+        {/* Stats stacked vertically, right-aligned — tajmirul-style. */}
         <motion.div
-          {...rise(0.24)}
-          className="flex flex-row flex-wrap items-end justify-end gap-x-12 gap-y-8 text-right lg:flex-col lg:gap-10 lg:pb-6"
+          {...rise(0.7)}
+          className="flex flex-row flex-wrap items-end justify-end gap-x-12 gap-y-8 text-right lg:flex-col lg:items-end lg:gap-11"
         >
           <StatCounter value={years} label="Years of Experience" align="right" />
           <StatCounter value={projectCount} label="Completed Projects" align="right" />
