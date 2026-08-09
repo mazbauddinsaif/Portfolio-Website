@@ -13,7 +13,7 @@ export default function About({ about }) {
 
   return (
     <Section id="about" title="I believe in building things that are fast, accessible, and worth using." eyebrow="About">
-      <div className="grid gap-12 md:grid-cols-[1fr_1.5fr] md:gap-14">
+      <div className="-mt-8 grid gap-12 md:-mt-12 md:grid-cols-[1fr_1.5fr] md:gap-14">
         {/* Portrait: bordered square with lime corner brackets, echoing the stack cards. */}
         <Reveal>
           <figure className="relative mx-auto w-full max-w-[300px] md:sticky md:top-28 md:mx-0 md:max-w-[360px]">
@@ -40,8 +40,15 @@ export default function About({ about }) {
         </Reveal>
 
         <div>
-          
-          <Reveal delay={0.1} className="mt-1 text-[0.9375rem] leading-relaxed text-ink-muted">
+          <Reveal delay={0.08}>
+            <p className="text-sm font-medium text-ink">
+              Instructor <span className="mx-2 text-ink-faint">|</span>
+              Software Developer <span className="mx-2 text-ink-faint">|</span>
+              Competitive Programmer <span className="mx-2 text-ink-faint">|</span>
+              Blogger
+            </p>
+          </Reveal>
+          <Reveal delay={0.1} className="mt-4 text-[0.9375rem] leading-relaxed text-ink-muted">
             {(about.paragraphs || []).map((p, i) => (
               <RichText key={i} text={p} className="mb-4" />
             ))}

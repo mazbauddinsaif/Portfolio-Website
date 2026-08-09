@@ -26,7 +26,12 @@ export default function Blog() {
 
   // Section always renders (nav links to it); body states vary.
   return (
-    <Section id="blog" title="Writing" eyebrow="Blog">
+    <Section
+      id="blog"
+      title="Writing"
+      eyebrow="Blog"
+      className="min-h-[calc(100svh-4rem)]"
+    >
       {loading ? (
         <p className="py-10 text-center text-sm text-ink-faint">Loading articles…</p>
       ) : posts.length === 0 ? (

@@ -105,6 +105,18 @@
     -webkit-text-size-adjust: 100%;
   }
 
+  /* Anchor the section heading below the fixed nav, not the section's large
+     decorative top padding. This keeps nav jumps visually consistent. */
+  section[id]:not(#hero) {
+    scroll-margin-top: -6rem;
+  }
+
+  @media (min-width: 768px) {
+    section[id]:not(#hero) {
+      scroll-margin-top: -9rem;
+    }
+  }
+
   body {
     background-color: var(--c-bg-0);
     color: var(--c-ink);

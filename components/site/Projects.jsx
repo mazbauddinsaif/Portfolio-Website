@@ -1,4 +1,5 @@
 'use client';
+
 import { useCallback, useEffect, useState } from 'react';
 import {
   FiGithub,
@@ -17,7 +18,6 @@ import SafeImage from './ui/SafeImage';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-/* GitHub's language colors for the repo-card dots. */
 const LANG_COLORS = {
   javascript: '#f1e05a',
   typescript: '#3178c6',
@@ -54,7 +54,6 @@ function titleCase(s) {
   return s.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 }
 
-/* Compact stat card: icon + big number + label (ilhamriski-style row of four). */
 function StatCard({ icon: Icon, value, label }) {
   return (
     <div className="card flex items-center gap-4 p-5">
@@ -69,20 +68,28 @@ function StatCard({ icon: Icon, value, label }) {
   );
 }
 
-/* GitHub-style contribution heatmap, restyled to the accent ramp. */
 function ContribGraph({ username, onTotal }) {
   const [data, setData] = useState(null);
 
   useEffect(() => {
     if (!username) return;
-    fetch(`https://github-contributions-api.jogruber.de/v4/${username}?y=last`)
+
+    let isMounted = true;
+    const controller = new AbortController();
+
+    fetch(`https://github-contributions-api.jogruber.de/v4/${username}?y=last`, {
+      signal: controller.signal,
+    })
       .then((r) => r.json())
       .then((json) => {
+        if (!isMounted) return;
         const contribs = json.contributions;
         if (!Array.isArray(contribs)) return;
+
         const total = contribs.reduce((s, d) => s + d.count, 0);
         const cells = [];
-        const firstDay = new Date(contribs[0].date + 'T00:00:00');
+        const firstDay = new Date(`${contribs[0].date}T00:00:00`);
+        
         for (let p = 0; p < firstDay.getDay(); p++) cells.push(null);
         contribs.forEach((c) => cells.push(c));
         while (cells.length % 7 !== 0) cells.push(null);
@@ -91,16 +98,26 @@ function ContribGraph({ username, onTotal }) {
         let lastMonth = -1;
         cells.forEach((c, i) => {
           if (!c) return;
-          const d = new Date(c.date + 'T00:00:00');
+          const d = new Date(`${c.date}T00:00:00`);
           if (d.getMonth() !== lastMonth) {
             months.push({ week: Math.floor(i / 7), label: d.toLocaleString('default', { month: 'short' }) });
             lastMonth = d.getMonth();
           }
         });
+
         setData({ cells, months, total });
         onTotal?.(total);
       })
-      .catch(() => {});
+      .catch((err) => {
+        if (err.name !== 'AbortError') {
+          console.error('Failed to fetch contributions:', err);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
   }, [username, onTotal]);
 
   if (!data) return null;
@@ -137,7 +154,7 @@ function ContribGraph({ username, onTotal }) {
                 title={`${c.count} contribution${c.count === 1 ? '' : 's'} on ${c.date}`}
               />
             ) : (
-              <div key={i} className="contrib-cell contrib-empty" />
+              <div key={i} className={`contrib-cell contrib-empty`} />
             )
           )}
         </div>
@@ -153,7 +170,6 @@ function ContribGraph({ username, onTotal }) {
   );
 }
 
-/* Plain repo card: name, description, language dot + stars + forks. */
 function RepoCard({ repo }) {
   return (
     <a
@@ -203,20 +219,28 @@ export default function Projects({ portfolio }) {
   const close = useCallback(() => setSelected(null), []);
   const onTotal = useCallback((t) => setContribTotal(t), []);
   const username = portfolio?.github?.username;
+  const initialProjects = portfolio?.projects;
 
   useEffect(() => {
     if (!username) return;
+
+    let isMounted = true;
+
     fetch(`${API_URL}/api/portfolio/github`)
       .then((r) => r.json())
       .then((res) => {
+        if (!isMounted) return;
+
         if (res.enabled) {
           setGhStats(res.profile);
           const overrides = res.repoOverrides || {};
-          const active = res.repositories.filter((repo) => {
+          const active = (res.repositories || []).filter((repo) => {
             const ov = overrides[repo.name];
             return !ov || ov.active !== false;
           });
+
           setRepos(active);
+
           const mapped = active.map((repo) => {
             const ov = overrides[repo.name] || {};
             return {
@@ -229,28 +253,40 @@ export default function Projects({ portfolio }) {
               demoUrl: ov.demoUrl !== undefined ? ov.demoUrl : repo.homepage || '',
             };
           });
-          const all = [...mapped, ...(portfolio?.projects || [])];
+
+          const all = [...mapped, ...(initialProjects || [])];
           const cats = ['All'];
+
           all.forEach((p) => {
             const c = titleCase(p.category || 'web development');
             if (!cats.includes(c)) cats.push(c);
           });
+
           setProjects(all);
           setCategories(cats);
         }
         setLoading(false);
       })
-      .catch(() => setLoading(false));
-  }, [username, portfolio]);
+      .catch(() => {
+        if (isMounted) setLoading(false);
+      });
 
-  const visible = filter === 'all' ? projects : projects.filter((p) => (p.category || '').toLowerCase() === filter);
+    return () => {
+      isMounted = false;
+    };
+  }, [username, initialProjects]);
+
+  const visible = filter === 'all' 
+    ? projects 
+    : projects.filter((p) => (p.category || '').toLowerCase() === filter);
+
   const topRepos = repos.slice(0, 6);
 
   return (
     <Section id="projects" title="My Works" eyebrow="GitHub + Projects">
-      {/* ── GitHub block first: stats row, heatmap, selected repositories ── */}
+      {/* GitHub block */}
       {username && (
-        <div className="mb-20">
+        <div className="-mt-8 mb-20 md:-mt-12">
           <Reveal className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             <StatCard icon={FiFolder} value={ghStats?.publicRepos} label="Public Repos" />
             <StatCard icon={FiStar} value={ghStats?.totalStars} label="Total Stars" />
@@ -291,7 +327,7 @@ export default function Projects({ portfolio }) {
         </div>
       )}
 
-      {/* ── Works underneath: numbered project cards ── */}
+      {/* Selected works section */}
       <Reveal className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <p className="eyebrow">Selected works</p>
         <ul className="flex flex-wrap gap-2">

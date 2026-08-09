@@ -5,15 +5,6 @@ import { FiArrowDown, FiPlay } from 'react-icons/fi';
 import StatCounter from './ui/StatCounter';
 
 /* Years of experience = earliest year found in resume.experience periods → now. */
-function deriveYears(experience) {
-  const years = (experience || [])
-    .flatMap((org) => [org.period, ...(org.roles || []).map((r) => r.period)])
-    .flatMap((p) => String(p || '').match(/\d{4}/g) || [])
-    .map(Number);
-  if (!years.length) return 1;
-  return Math.max(1, new Date().getFullYear() - Math.min(...years));
-}
-
 function firstSentence(text) {
   if (!text) return '';
   const plain = text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -21,11 +12,8 @@ function firstSentence(text) {
   return (m ? m[0] : plain).trim();
 }
 
-export default function Hero({ sidebar, about, contact, resume, portfolio, achievements }) {
+export default function Hero({ sidebar, about }) {
   const reduce = useReducedMotion();
-  const years = deriveYears(resume?.experience);
-  const projectCount = Math.max(portfolio?.projects?.length || 0, 5);
-  const certCount = (achievements || []).reduce((s, c) => s + (c.certs?.length || 0), 0);
 
   // "Junior Software Developer | Instructor" → stacked display lines.
   const titleWords = (sidebar?.title || 'Software Developer').split('|')[0].trim().split(' ');
@@ -107,9 +95,9 @@ export default function Hero({ sidebar, about, contact, resume, portfolio, achie
           {...rise(0.7)}
           className="flex flex-row flex-wrap items-end justify-end gap-x-12 gap-y-8 text-right lg:flex-col lg:items-end lg:gap-11"
         >
-          <StatCounter value={years} label="Years of Experience" align="right" />
-          <StatCounter value={projectCount} label="Completed Projects" align="right" />
-          <StatCounter value={certCount} label="Certificates Earned" align="right" />
+          <StatCounter value={4} label="Industry Projects" align="right" />
+          <StatCounter value={8} label="Personal Projects" align="right" />
+          <StatCounter value={50} label="Achievements" align="right" />
         </motion.div>
       </div>
     </section>

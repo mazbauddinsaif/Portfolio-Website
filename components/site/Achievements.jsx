@@ -31,7 +31,7 @@ function CertCard({ cert, onOpen }) {
 }
 
 export default function Achievements({ achievements }) {
-  const [view, setView] = useState('category');
+  const [view, setView] = useState('timeline');
   const [modalCert, setModalCert] = useState(null);
   const close = useCallback(() => setModalCert(null), []);
 

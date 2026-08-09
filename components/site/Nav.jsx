@@ -35,6 +35,19 @@ export default function Nav({ name = 'Portfolio' }) {
     };
   }, [open]);
 
+  // Performs an immediate non-animated jump directly to target section
+  const handleJump = (e, id) => {
+    if (window.location.pathname === '/') {
+      e.preventDefault();
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'instant' });
+        window.history.pushState(null, '', `/#${id}`);
+      }
+    }
+    setOpen(false);
+  };
+
   const first = name.split(' ')[0];
 
   return (
@@ -54,6 +67,7 @@ export default function Nav({ name = 'Portfolio' }) {
             <li key={l.id} className={l.wide ? 'hidden xl:block' : undefined}>
               <Link
                 href={`/#${l.id}`}
+                onClick={(e) => handleJump(e, l.id)}
                 className="text-[0.8125rem] font-medium text-ink-muted transition-colors hover:text-ink"
               >
                 {l.label}
@@ -64,8 +78,13 @@ export default function Nav({ name = 'Portfolio' }) {
 
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          <Link href="/play" className="btn-accent hidden sm:inline-flex" data-track-click="nav_play_with_me">
-            Play With Me
+          <Link
+            href="/#contact"
+            onClick={(e) => handleJump(e, 'contact')}
+            className="btn-accent hidden sm:inline-flex"
+            data-track-click="nav_lets_talk"
+          >
+            Let&apos;s Talk
           </Link>
           <button
             type="button"
@@ -86,7 +105,7 @@ export default function Nav({ name = 'Portfolio' }) {
               <li key={l.id}>
                 <Link
                   href={`/#${l.id}`}
-                  onClick={() => setOpen(false)}
+                  onClick={(e) => handleJump(e, l.id)}
                   className="display block py-2 text-5xl text-ink-muted transition-colors hover:text-ink"
                 >
                   <span className="mr-4 text-base text-accent-text">_0{i + 1}.</span>
@@ -99,7 +118,11 @@ export default function Nav({ name = 'Portfolio' }) {
             <Link href="/play" onClick={() => setOpen(false)} className="btn-accent w-full justify-center">
               Play With Me
             </Link>
-            <Link href="/#contact" onClick={() => setOpen(false)} className="btn-ghost w-full justify-center">
+            <Link
+              href="/#contact"
+              onClick={(e) => handleJump(e, 'contact')}
+              className="btn-ghost w-full justify-center"
+            >
               Let&apos;s Talk
             </Link>
           </div>
