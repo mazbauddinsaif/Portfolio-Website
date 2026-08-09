@@ -324,7 +324,7 @@ export default function Projects({ portfolio }) {
           ))}
         </div>
       ) : (
-        <ul className="grid gap-x-8 gap-y-14 sm:grid-cols-2">
+        <ul className="grid gap-x-8 gap-y-14 sm:grid-cols-3">
           {visible.map((p, i) => (
             <Reveal as="li" key={`${p.title}-${i}`} delay={(i % 2) * 0.08}>
               <button

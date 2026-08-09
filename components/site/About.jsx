@@ -12,8 +12,8 @@ export default function About({ about }) {
   if (!about) return null;
 
   return (
-    <Section id="about" title="This is me." eyebrow="About">
-      <div className="grid gap-12 md:grid-cols-[1fr_1.5fr] md:gap-16">
+    <Section id="about" title="I believe in building things that are fast, accessible, and worth using." eyebrow="About">
+      <div className="grid gap-12 md:grid-cols-[1fr_1.5fr] md:gap-14">
         {/* Portrait: bordered square with lime corner brackets, echoing the stack cards. */}
         <Reveal>
           <figure className="relative mx-auto w-full max-w-[300px] md:sticky md:top-28 md:mx-0 md:max-w-[360px]">
@@ -40,12 +40,8 @@ export default function About({ about }) {
         </Reveal>
 
         <div>
-          <Reveal>
-            <p className="display text-2xl leading-tight sm:text-3xl">
-              I believe in building things that are fast, accessible, and worth using.
-            </p>
-          </Reveal>
-          <Reveal delay={0.1} className="mt-8 text-[0.9375rem] leading-relaxed text-ink-muted">
+          
+          <Reveal delay={0.1} className="mt-1 text-[0.9375rem] leading-relaxed text-ink-muted">
             {(about.paragraphs || []).map((p, i) => (
               <RichText key={i} text={p} className="mb-4" />
             ))}
