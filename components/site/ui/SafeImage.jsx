@@ -30,6 +30,9 @@ export default function SafeImage({
   }
 
   return (
+    // next/image can't express the onError fallback this needs, and the CMS
+    // serves arbitrary remote hosts (GitHub OG images, uploaded logos).
+    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={src}
       alt={alt}

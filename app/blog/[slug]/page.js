@@ -1,4 +1,4 @@
-import BlogPostClient from '@/components/portfolio/BlogPostClient';
+import BlogPost from '@/components/site/BlogPost';
 
 export const dynamic = 'force-dynamic';
 
@@ -67,10 +67,11 @@ export default async function BlogPostPage({ params }) {
   const data = await getPortfolioData();
 
   return (
-    <BlogPostClient 
-      sidebarData={data?.sidebar} 
-      postData={postData} 
+    <BlogPost
+      sidebarData={data?.sidebar}
+      postData={postData}
       enableAnalytics={data?.enableAnalytics}
+      siteTheme={data?.siteTheme}
     />
   );
 }
