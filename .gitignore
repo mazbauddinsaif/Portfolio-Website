@@ -42,3 +42,6 @@ next-env.d.ts
 
 # optimized-image backups
 /.image-originals
+
+# nested clone, not part of this repo
+/red1-readme-repo
