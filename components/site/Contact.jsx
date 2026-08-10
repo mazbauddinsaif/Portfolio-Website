@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { FiSend, FiMail, FiPhone, FiMapPin } from 'react-icons/fi';
 import Section from './ui/Section';
 import Reveal from './ui/Reveal';
-import { SocialIcon } from './Footer';
+import RollIcon from './ui/RollIcon';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
@@ -90,10 +90,10 @@ export default function Contact({ contact, sidebar }) {
                     href={s.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={s.icon}
-                    className="grid size-10 place-items-center rounded-full border border-line text-ink-muted transition-colors hover:border-accent-text hover:text-accent-text"
+                    aria-label={s.label || s.icon}
+                    className="group/roll grid size-10 place-items-center rounded-full border border-line text-ink-muted transition-colors hover:border-accent-text hover:text-accent-text"
                   >
-                    <SocialIcon name={s.icon} />
+                    <RollIcon name={s.icon} />
                   </a>
                 </li>
               ))}

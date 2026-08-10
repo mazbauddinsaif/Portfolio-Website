@@ -42,6 +42,22 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="en" data-default-mode={defaultMode} suppressHydrationWarning>
+      <head>
+        {/* Every image on the page is remote (uploads on ImgBB, GitHub OG cards), so
+            the TLS handshake to those hosts starts with the document instead of with
+            the first <img> the browser happens to reach. */}
+        {[
+          'https://i.ibb.co',
+          'https://opengraph.githubassets.com',
+          'https://avatars.githubusercontent.com',
+          'https://rokbucket.rokomari.io',
+          process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000',
+        ].map(
+          (host) => (
+            <link key={host} rel="preconnect" href={host} crossOrigin="anonymous" />
+          )
+        )}
+      </head>
       <body className={`${anton.variable} ${inter.variable} antialiased`}>
         {/* Sets .dark before paint so the visitor never sees the wrong theme. */}
         <Script src="/theme-init.js" strategy="beforeInteractive" />

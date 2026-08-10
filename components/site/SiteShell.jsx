@@ -8,6 +8,7 @@ import About from './About';
 import Stack from './Stack';
 import Experience from './Experience';
 import Education from './Education';
+import Research from './Research';
 import Projects from './Projects';
 import Achievements from './Achievements';
 import Blog from './Blog';
@@ -63,13 +64,14 @@ export default function SiteShell({ data }) {
   return (
     <ThemeScope theme={data?.siteTheme}>
       <div id="top" />
-      <Nav name={data.sidebar?.name} />
+      <Nav name={data.sidebar?.name} sidebar={data.sidebar} />
       <main>
         <Hero sidebar={data.sidebar} about={data.about} contact={data.contact} resume={data.resume} portfolio={data.portfolio} achievements={data.achievements} />
         <About about={data.about} />
         <Stack skillsMatrix={data.resume?.skillsMatrix} />
         <Experience experience={data.resume?.experience} sidebar={data.sidebar} showDownloadPDF={data.resume?.showDownloadPDF} />
         <Education education={data.resume?.education} />
+        <Research research={data.research} publications={data.publications} />
         <Projects portfolio={data.portfolio} />
         <Achievements achievements={data.achievements} />
         <Blog />

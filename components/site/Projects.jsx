@@ -15,8 +15,18 @@ import Section from './ui/Section';
 import Reveal from './ui/Reveal';
 import Modal from './ui/Modal';
 import SafeImage from './ui/SafeImage';
+import ScrollRail from './ui/ScrollRail';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+/* GitHub's social preview is a 2:1 card whose whole point is the text on it, so
+   cropping it to the 16:10 tile slices the repo name in half. Those get letterboxed;
+   real screenshots and uploads still fill the tile. */
+function fitOf(src) {
+  return /opengraph\.githubassets\.com|githubusercontent\.com\/.*\/og/i.test(String(src || ''))
+    ? 'object-contain'
+    : 'object-cover';
+}
 
 const LANG_COLORS = {
   javascript: '#f1e05a',
@@ -360,9 +370,14 @@ export default function Projects({ portfolio }) {
           ))}
         </div>
       ) : (
-        <ul className="grid gap-x-8 gap-y-14 sm:grid-cols-3">
+        <ScrollRail label="Projects">
           {visible.map((p, i) => (
-            <Reveal as="li" key={`${p.title}-${i}`} delay={(i % 2) * 0.08}>
+            <Reveal
+              as="div"
+              key={`${p.title}-${i}`}
+              delay={Math.min(i * 0.05, 0.3)}
+              className="w-[85vw] shrink-0 snap-start sm:w-[24rem] lg:w-[26rem]"
+            >
               <button
                 type="button"
                 onClick={() => setSelected(p)}
@@ -373,7 +388,9 @@ export default function Projects({ portfolio }) {
                   <SafeImage
                     src={p.image}
                     alt={p.title}
-                    className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                    // First row is above the fold on most screens — load it immediately.
+                    loading={i < 3 ? 'eager' : 'lazy'}
+                    className={`size-full transition-transform duration-500 group-hover:scale-[1.04] ${fitOf(p.image)}`}
                   />
                   <span className="absolute top-3 right-3 grid size-9 translate-y-1 place-items-center rounded-full bg-accent text-accent-ink opacity-0 transition group-hover:translate-y-0 group-hover:opacity-100">
                     <FiArrowUpRight size={15} />
@@ -402,14 +419,20 @@ export default function Projects({ portfolio }) {
               </button>
             </Reveal>
           ))}
-        </ul>
+        </ScrollRail>
       )}
 
       <Modal open={Boolean(selected)} onClose={close} label={selected?.title}>
         {selected && (
           <>
             <div className="aspect-[16/9] w-full overflow-hidden border-b border-line bg-bg-2">
-              <SafeImage src={selected.image} alt={selected.title} loading="eager" className="size-full object-cover" />
+              <SafeImage
+                src={selected.image}
+                alt={selected.title}
+                loading="eager"
+                fetchPriority="high"
+                className={`size-full ${fitOf(selected.image)}`}
+              />
             </div>
             <div className="p-6 sm:p-8">
               <div className="flex flex-wrap gap-1.5">

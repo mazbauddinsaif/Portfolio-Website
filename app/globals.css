@@ -341,6 +341,15 @@
   -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
 }
 
+/* Horizontal rails hide their scrollbar; the arrows and edge fades carry the affordance. */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 /* one soft blurred wash behind the whole strip — no per-logo boxes */
 .marquee-glow {
   position: absolute;
@@ -348,11 +357,11 @@
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(45% 60% at 20% 50%, color-mix(in srgb, var(--c-accent) 22%, transparent), transparent 70%),
-    radial-gradient(40% 60% at 75% 50%, color-mix(in srgb, var(--c-accent) 14%, transparent), transparent 70%),
+    radial-gradient(45% 60% at 20% 50%, color-mix(in srgb, var(--c-accent) 12%, transparent), transparent 70%),
+    radial-gradient(40% 60% at 75% 50%, color-mix(in srgb, var(--c-accent) 8%, transparent), transparent 70%),
     radial-gradient(80% 100% at 50% 50%, var(--c-bg-2), transparent 75%);
   filter: blur(48px);
-  opacity: 0.8;
+  opacity: 0.45;
 }
 
 .marquee-track {
