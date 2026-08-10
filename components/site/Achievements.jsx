@@ -17,7 +17,7 @@ function thumbOf(src) {
     : src;
 }
 
-function CertCard({ cert, onOpen }) {
+function CertCard({ cert, onOpen, eager = false }) {
   return (
     <li>
       <button type="button" onClick={() => onOpen(cert)} className="group block w-full text-left">
@@ -27,6 +27,7 @@ function CertCard({ cert, onOpen }) {
             alt={cert.cardTitle}
             width={640}
             height={480}
+            loading={eager ? 'eager' : 'lazy'}
             className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
           />
         </div>
@@ -40,12 +41,19 @@ function CertCard({ cert, onOpen }) {
   );
 }
 
-export default function Achievements({ achievements }) {
+export default function Achievements({ achievements: raw }) {
   const [view, setView] = useState('timeline');
   const [modalCert, setModalCert] = useState(null);
   const close = useCallback(() => setModalCert(null), []);
 
-  if (!achievements?.length) return null;
+  /* Categories and individual certificates can be hidden from the panel without
+     being deleted, so both levels are filtered out before anything is counted. */
+  const achievements = (raw || [])
+    .filter((cat) => !cat.hidden)
+    .map((cat) => ({ ...cat, certs: (cat.certs || []).filter((c) => !c.hidden) }))
+    .filter((cat) => cat.certs.length);
+
+  if (!achievements.length) return null;
 
   const total = achievements.reduce((s, c) => s + (c.certs?.length || 0), 0);
 
@@ -135,7 +143,7 @@ export default function Achievements({ achievements }) {
               </Reveal>
               <ul className="grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3">
                 {yearMap[year].map((cert, ci) => (
-                  <CertCard key={ci} cert={cert} onOpen={setModalCert} />
+                  <CertCard key={ci} cert={cert} onOpen={setModalCert} eager={yi === 0 && ci < 3} />
                 ))}
               </ul>
             </div>

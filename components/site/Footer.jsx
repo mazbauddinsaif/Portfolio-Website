@@ -1,17 +1,8 @@
-import { FiGithub, FiLinkedin, FiFacebook, FiTwitter, FiInstagram, FiYoutube, FiGlobe, FiMail } from 'react-icons/fi';
+import SocialIcon from './ui/SocialIcon';
+import RollIcon from './ui/RollIcon';
 
-/* The CMS stores ionicon names ("logo-github"); map them onto Feather icons. */
-export function SocialIcon({ name, size = 16 }) {
-  const key = (name || '').toLowerCase();
-  if (key.includes('github')) return <FiGithub size={size} />;
-  if (key.includes('linkedin')) return <FiLinkedin size={size} />;
-  if (key.includes('facebook')) return <FiFacebook size={size} />;
-  if (key.includes('twitter') || key.includes('x-')) return <FiTwitter size={size} />;
-  if (key.includes('instagram')) return <FiInstagram size={size} />;
-  if (key.includes('youtube')) return <FiYoutube size={size} />;
-  if (key.includes('mail')) return <FiMail size={size} />;
-  return <FiGlobe size={size} />;
-}
+// Kept as a named re-export: several sections import { SocialIcon } from './Footer'.
+export { SocialIcon };
 
 export default function Footer({ sidebar }) {
   return (
@@ -20,17 +11,17 @@ export default function Footer({ sidebar }) {
         <p className="text-xs text-ink-faint">
           © {new Date().getFullYear()} {sidebar?.name || 'Portfolio'}. All rights reserved.
         </p>
-        <ul className="flex items-center gap-4">
+        <ul className="flex items-center gap-2">
           {(sidebar?.socials || []).map((s, i) => (
             <li key={i}>
               <a
                 href={s.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={s.icon}
-                className="text-ink-faint transition-colors hover:text-accent-text"
+                aria-label={s.label || s.icon}
+                className="group/roll grid size-9 place-items-center rounded-lg text-ink-faint transition-colors hover:bg-bg-2 hover:text-accent-text"
               >
-                <SocialIcon name={s.icon} />
+                <RollIcon name={s.icon} />
               </a>
             </li>
           ))}

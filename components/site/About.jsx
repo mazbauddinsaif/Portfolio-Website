@@ -81,7 +81,8 @@ export default function About({ about }) {
       {workedWith.length > 0 && (
         <Reveal className="mt-20">
           <div className="mb-8 flex items-center gap-5">
-            <p className="eyebrow shrink-0">Worked with</p>
+            <span className="h-px flex-1 bg-line" />
+            <p className="eyebrow shrink-0 text-sm tracking-[0.2em]">Worked with</p>
             <span className="h-px flex-1 bg-line" />
           </div>
           {/* Logos drift right-to-left over a soft blurred wash — no tiles, no borders.
@@ -97,17 +98,24 @@ export default function About({ about }) {
                       <SafeImage
                         src={c.logo}
                         alt="organization logo"
-                        className="max-h-12 max-w-[150px] object-contain opacity-70 grayscale transition duration-300 hover:opacity-100 hover:grayscale-0"
+                        className="max-h-12 max-w-[150px] object-contain transition duration-300 group-hover:scale-105"
                       />
                     );
+                    /* Most of these logos are dark artwork on a transparent background,
+                       so in dark mode they sit on a light plate instead of vanishing. */
+                    const plated = (
+                      <span className="grid place-items-center rounded-lg px-3 py-2 dark:bg-white/90">
+                        {logo}
+                      </span>
+                    );
                     return (
-                      <li key={i} className="flex h-20 w-40 shrink-0 items-center justify-center">
+                      <li key={i} className="group flex h-20 w-40 shrink-0 items-center justify-center">
                         {c.url ? (
                           <a href={c.url} target="_blank" rel="noopener noreferrer" className="block">
-                            {logo}
+                            {plated}
                           </a>
                         ) : (
-                          logo
+                          plated
                         )}
                       </li>
                     );
