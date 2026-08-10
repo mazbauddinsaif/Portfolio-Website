@@ -15,7 +15,6 @@ import Section from './ui/Section';
 import Reveal from './ui/Reveal';
 import Modal from './ui/Modal';
 import SafeImage from './ui/SafeImage';
-import ScrollRail from './ui/ScrollRail';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
@@ -370,14 +369,9 @@ export default function Projects({ portfolio }) {
           ))}
         </div>
       ) : (
-        <ScrollRail label="Projects">
+        <ul className="grid gap-x-8 gap-y-14 sm:grid-cols-3">
           {visible.map((p, i) => (
-            <Reveal
-              as="div"
-              key={`${p.title}-${i}`}
-              delay={Math.min(i * 0.05, 0.3)}
-              className="w-[85vw] shrink-0 snap-start sm:w-[24rem] lg:w-[26rem]"
-            >
+            <Reveal as="li" key={`${p.title}-${i}`} delay={(i % 2) * 0.08}>
               <button
                 type="button"
                 onClick={() => setSelected(p)}
@@ -419,7 +413,7 @@ export default function Projects({ portfolio }) {
               </button>
             </Reveal>
           ))}
-        </ScrollRail>
+        </ul>
       )}
 
       <Modal open={Boolean(selected)} onClose={close} label={selected?.title}>
