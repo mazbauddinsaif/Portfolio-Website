@@ -18,6 +18,12 @@ export default function About({ about }) {
   const portraitDark = about.portraitDark || PORTRAIT_DARK_DEFAULT;
   const roles = (about.roles && about.roles.length > 0) ? about.roles : DEFAULT_ROLES;
 
+  const workedWith = about.workedWithList || [];
+  // repeat the roster until the marquee row is wide enough to fill a desktop viewport
+  const marqueeRow = workedWith.length
+    ? Array.from({ length: Math.ceil(8 / workedWith.length) }, () => workedWith).flat()
+    : [];
+
   return (
     <Section id="about" title="I believe in building things that are fast, accessible, and worth using." eyebrow="About">
       <div className="-mt-8 grid gap-8 md:-mt-12 md:grid-cols-[1fr_1.5fr] md:gap-0">
@@ -36,11 +42,18 @@ export default function About({ about }) {
             <SafeImage
               src={portraitLight}
               alt="Portrait"
+              loading="eager"
+              fetchPriority="high"
+              width={720}
+              height={720}
               className="block aspect-square w-full rounded border border-line bg-bg-2 object-cover dark:hidden"
             />
             <SafeImage
               src={portraitDark}
               alt="Portrait"
+              loading="eager"
+              width={720}
+              height={720}
               className="hidden aspect-square w-full rounded border border-line bg-bg-2 object-cover dark:block"
             />
           </figure>
@@ -65,37 +78,44 @@ export default function About({ about }) {
         </div>
       </div>
 
-      {(about.workedWithList || []).length > 0 && (
+      {workedWith.length > 0 && (
         <Reveal className="mt-20">
           <div className="mb-8 flex items-center gap-5">
             <p className="eyebrow shrink-0">Worked with</p>
             <span className="h-px flex-1 bg-line" />
           </div>
-          {/* Bordered logo tiles — reads as a deliberate roster, not a stray strip. */}
-          <ul className="grid grid-cols-2 gap-px overflow-hidden rounded border border-line bg-line sm:grid-cols-3 lg:grid-cols-4">
-            {about.workedWithList.map((c, i) => {
-              const tile = (
-                <span className="flex h-24 items-center justify-center bg-bg-1 p-6 transition-colors group-hover:bg-bg-2">
-                  <SafeImage
-                    src={c.logo}
-                    alt="organization logo"
-                    className="max-h-12 max-w-full object-contain opacity-70 grayscale transition duration-300 group-hover:opacity-100 group-hover:grayscale-0"
-                  />
-                </span>
-              );
-              return (
-                <li key={i} className="group">
-                  {c.url ? (
-                    <a href={c.url} target="_blank" rel="noopener noreferrer" className="block">
-                      {tile}
-                    </a>
-                  ) : (
-                    tile
-                  )}
-                </li>
-              );
-            })}
-          </ul>
+          {/* Logos drift right-to-left over a soft blurred wash — no tiles, no borders.
+             `row` is padded out so a short roster still fills the strip, then the
+             whole row is rendered twice so the -50% translate loops seamlessly. */}
+          <div className="marquee">
+            <span aria-hidden="true" className="marquee-glow" />
+            <div className="marquee-track">
+              {[0, 1].map((copy) => (
+                <ul key={copy} className="marquee-row" aria-hidden={copy === 1 || undefined}>
+                  {marqueeRow.map((c, i) => {
+                    const logo = (
+                      <SafeImage
+                        src={c.logo}
+                        alt="organization logo"
+                        className="max-h-12 max-w-[150px] object-contain opacity-70 grayscale transition duration-300 hover:opacity-100 hover:grayscale-0"
+                      />
+                    );
+                    return (
+                      <li key={i} className="flex h-20 w-40 shrink-0 items-center justify-center">
+                        {c.url ? (
+                          <a href={c.url} target="_blank" rel="noopener noreferrer" className="block">
+                            {logo}
+                          </a>
+                        ) : (
+                          logo
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              ))}
+            </div>
+          </div>
         </Reveal>
       )}
     </Section>
