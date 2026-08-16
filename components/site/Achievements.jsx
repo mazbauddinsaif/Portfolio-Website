@@ -1,6 +1,7 @@
 'use client';
 import { useCallback, useState } from 'react';
-import { FiGrid, FiClock, FiExternalLink } from 'react-icons/fi';
+import AchievementsRing from './AchievementsRing';
+import { FiGrid, FiClock, FiExternalLink, FiRotateCw } from 'react-icons/fi';
 import Section from './ui/Section';
 import Reveal from './ui/Reveal';
 import Modal from './ui/Modal';
@@ -108,6 +109,16 @@ export default function Achievements({ achievements: raw }) {
           >
             <FiClock size={14} />
           </button>
+          <button
+  type="button"
+  title="Ring view"
+  onClick={() => setView('ring')}
+  className={`grid size-9 place-items-center transition-colors ${
+    view === 'ring' ? 'bg-accent text-accent-ink' : 'text-ink-muted hover:text-ink'
+  }`}
+>
+  <FiRotateCw size={14} />
+</button>
         </div>
       }
     >
@@ -133,8 +144,9 @@ export default function Achievements({ achievements: raw }) {
               ))}
             </div>
           ))}
-        </div>
-      ) : (
+        </div>) : view === 'ring' ? (
+  <AchievementsRing certs={sorted} onOpen={setModalCert} />
+) : (
         <div className="flex flex-col gap-14">
           {yearOrder.map((year, yi) => (
             <div key={yi} className="grid gap-6 md:grid-cols-[120px_1fr]">
