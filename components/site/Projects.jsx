@@ -383,7 +383,7 @@ export default function Projects({ portfolio }) {
                     src={p.image}
                     alt={p.title}
                     // First row is above the fold on most screens — load it immediately.
-                    loading={i < 3 ? 'eager' : 'lazy'}
+                    loading={i < 1 ? 'eager' : 'lazy'}
                     className={`size-full transition-transform duration-500 group-hover:scale-[1.04] ${fitOf(p.image)}`}
                   />
                   <span className="absolute top-3 right-3 grid size-9 translate-y-1 place-items-center rounded-full bg-accent text-accent-ink opacity-0 transition group-hover:translate-y-0 group-hover:opacity-100">

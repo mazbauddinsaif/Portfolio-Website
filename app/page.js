@@ -4,9 +4,12 @@ export const dynamic = 'force-dynamic';
 
 async function getPortfolioData() {
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8000);
   try {
     const res = await fetch(`${apiBaseUrl}/api/portfolio`, {
-      cache: 'no-store' // or next: { revalidate: 3600 } for ISR caching
+      cache: 'no-store',
+      signal: controller.signal,
     });
     if (!res.ok) {
       throw new Error(`API returned status ${res.status}`);
@@ -15,6 +18,8 @@ async function getPortfolioData() {
   } catch (error) {
     console.error('Failed to fetch portfolio data from backend:', error);
     return null;
+  } finally {
+    clearTimeout(timer);
   }
 }
 
