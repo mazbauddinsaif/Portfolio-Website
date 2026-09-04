@@ -28,7 +28,7 @@ const FRAME = {
   row: 'grid gap-6 border-t border-line py-8 first:border-t-0 first:pt-0 md:grid-cols-[1fr_auto]',
 };
 
-export function Card({ children, image, credit, alt, delay = 0, onOpen, variant = 'row' }) {
+export function Card({ children, image, credit, alt, delay = 0, onOpen, variant = 'row', eagerImage = false }) {
   const stacked = variant !== 'row';
 
   /* The whole card opens the detail dialog; the images are just a shortcut into it
@@ -44,7 +44,7 @@ export function Card({ children, image, credit, alt, delay = 0, onOpen, variant 
       <SafeImage
         src={src}
         alt={label}
-        loading="eager"
+        loading={eagerImage ? 'eager' : 'lazy'}
         className="mx-auto max-h-64 w-full object-contain transition-transform duration-500 group-hover:scale-[1.03]"
       />
     </button>
@@ -71,7 +71,7 @@ export function Card({ children, image, credit, alt, delay = 0, onOpen, variant 
   );
 }
 
-export function ResearchItem({ item, delay, onOpen, variant }) {
+export function ResearchItem({ item, delay, onOpen, variant, eagerImage = false }) {
   const meta = [item.role, item.institution, item.period].filter(Boolean);
   return (
     <Card
@@ -80,6 +80,7 @@ export function ResearchItem({ item, delay, onOpen, variant }) {
       delay={delay}
       onOpen={onOpen}
       variant={variant}
+      eagerImage={eagerImage}
     >
       <div className="flex flex-wrap items-center gap-3">
         {item.status && (
@@ -137,7 +138,7 @@ export function ResearchItem({ item, delay, onOpen, variant }) {
   );
 }
 
-export function PublicationItem({ item, delay, onOpen, variant }) {
+export function PublicationItem({ item, delay, onOpen, variant, eagerImage = false }) {
   const meta = [item.type, item.venue || item.publisher, item.date].filter(Boolean);
   return (
     <Card
@@ -147,6 +148,7 @@ export function PublicationItem({ item, delay, onOpen, variant }) {
       delay={delay}
       onOpen={onOpen}
       variant={variant}
+      eagerImage={eagerImage}
     >
       <h3 className="text-lg font-semibold sm:text-xl">{decodeEntities(item.title)}</h3>
 

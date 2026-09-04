@@ -48,7 +48,14 @@ function Rail({ id, title, items, href, what, onOpen, Item }) {
       </Reveal>
       <ScrollRail label={title}>
         {items.map((item, i) => (
-          <Item key={i} item={item} delay={i * 0.04} onOpen={() => onOpen(item)} variant="rail" />
+          <Item
+            key={i}
+            item={item}
+            delay={i * 0.04}
+            onOpen={() => onOpen(item)}
+            variant="rail"
+            eagerImage={i === 0}
+          />
         ))}
         <SeeAllCard href={href} count={items.length} what={what} />
       </ScrollRail>

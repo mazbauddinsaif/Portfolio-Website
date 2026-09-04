@@ -27,13 +27,20 @@ export const metadata = {
    to dark if the backend is unreachable. */
 async function getDefaultMode() {
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 5000);
   try {
-    const res = await fetch(`${apiBaseUrl}/api/portfolio`, { cache: 'no-store' });
+    const res = await fetch(`${apiBaseUrl}/api/portfolio`, {
+      cache: 'no-store',
+      signal: controller.signal,
+    });
     if (!res.ok) return 'dark';
     const data = await res.json();
     return data?.defaultMode === 'light' ? 'light' : 'dark';
   } catch {
     return 'dark';
+  } finally {
+    clearTimeout(timer);
   }
 }
 

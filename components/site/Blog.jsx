@@ -50,7 +50,7 @@ export default function Blog() {
                     <SafeImage
                       src={post.coverImage}
                       alt={post.title}
-                      loading={i < 3 ? 'eager' : 'lazy'}
+                      loading={i < 1 ? 'eager' : 'lazy'}
                       className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
                     />
                   ) : (

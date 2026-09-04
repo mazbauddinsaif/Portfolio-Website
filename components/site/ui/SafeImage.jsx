@@ -43,6 +43,7 @@ export default function SafeImage({
       width={width}
       height={height}
       style={style}
+      referrerPolicy="no-referrer"
       onError={() => setFailed(true)}
       {...rest}
     />
